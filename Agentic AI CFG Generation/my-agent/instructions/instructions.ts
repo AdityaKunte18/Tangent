@@ -96,6 +96,7 @@ When you are given an text input of a file which includes code from one of the p
             type: "loop"
             iteratorStart: # statement that indicates the starting state of the loop iterator. Can be 'null' if a) none is provided or b) loop represents a while loop
             iteratorUpdate: # statement that indicates how the iterator state will be updated on each iteration through the loop. Can be null if a) none is provided or b) loop represents a while loop
+            startPredicate: # predicate ID of the first predicate in the list of predicates
             predicates: # A list of predicate nodes
 
         # Example:
@@ -103,6 +104,7 @@ When you are given an text input of a file which includes code from one of the p
             type: "loop"
             iteratorStart: "int i = 0"
             iteratorUpdate: "i++"
+            startPredicate: N8a
             predicates:
                 - predicate:
                     ID: N8a
@@ -116,12 +118,13 @@ When you are given an text input of a file which includes code from one of the p
                 type: "loop"
                 iteratorStart: null
                 iteratorUpdate: null
+                startPredicate: N8a
                 predicates:
                     - predicate:
                         ID: N8a
                         statement: "true"
-                        onTrue: N10 # assuming the generated node id for the next node in the control flow graph outside of the loop is 'N10'
-                        onFalse: null # There is never a situation that true can equal false
+                        onTrue: N10 # assuming the generated node id for the next node in the control flow graph inside the loop is 'N10'
+                        onFalse: null # unreachable
             """
         6. Jump Node: Represents a break or continue like statement
         """
@@ -134,7 +137,7 @@ When you are given an text input of a file which includes code from one of the p
             type: "jump"
             next: N17    
         """
-        7. Exit Node: Represents the exit point of a method
+        7. Exit Node: Represents the exit point of a method eg., a return statement
         """
         # Node ID:
             type: "exit"
@@ -159,6 +162,12 @@ When you are given an text input of a file which includes code from one of the p
     
     Full Example:
     """
+    # int increment(int x) {
+    #   x = x + 1
+    #   return x
+    # }
+
+
     methods:
     - method:
         id: M1
@@ -179,7 +188,6 @@ When you are given an text input of a file which includes code from one of the p
             type: "block"
             statements:
                 - "x = x + 1"
-                - "return x"
             next: N3
 
             N3:
