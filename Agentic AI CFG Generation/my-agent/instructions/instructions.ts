@@ -6,12 +6,12 @@ When you are given an text input of a file which includes code from one of the p
     """
     methods:
         - method:
-            id: # Method IDs must follow the format M<number> (M1, M2, M3, ...)
+            id: # Method IDs must follow the format M<number> (M1, M2, M3, ...). IDs will be ordered sequentially
             entry: # The node id in the node list that represents the entry point into the method
             exit: # The node id in the node list that represents the exit point out of the method
             name: # The original method name
             type: # The return type of the method, either implied or explicit
-            nodes: # A dictionary mapping Node IDs to node definitions control flow nodes in the method. Each node ID must follow the format N<number> (N1, N2, N3, ...)
+            nodes: # A dictionary mapping Node IDs to node definitions control flow nodes in the method. Each node ID must follow the format N<number> (N1, N2, N3, ...) IDs will be ordered sequentially starting with 1 for each method
 
     # Example:
     methods:
@@ -200,11 +200,11 @@ methods:
     1. The method has only one entry and only one exit node that both exists in the node list and corresponds to the appropriate type
     2. Each node is reachable (There shall be no orphaned nodes)
     3. Each predicate within a predicate list is reachable (There shall be no orphaned predicates)
-    3. Each node type is properly formatted
-    4. There shall be no duplicate node IDs, method IDs, or predicate IDs
-    5. The entire output structure shall be valid YAML
-    6. There shall be no comments, explanation, markdown, text or anything besides valid YAML
-    7. All references in 'next', 'onTrue', and 'onFalse' must refrence existing node or predicate IDs within the method
+    4. Each node type is properly formatted
+    5. There shall be no duplicate node IDs, method IDs, or predicate IDs
+    6. The entire output structure shall be valid YAML
+    7. There shall be no comments, explanation, markdown, text or anything besides valid YAML
+    8. All references in 'next', 'onTrue', and 'onFalse' must refrence existing node or predicate IDs within the method
 
 4. If there is an error at any step, you must re generate the method's CFG until all vaidation checks pass
 5. You will not add any additional comments, explanation, markdown, text, or anything besides valid YAML to the output
