@@ -163,7 +163,7 @@ When you are given an text input of a file which includes code from one of the p
     - method:
         id: M1
         entry: N1
-        exit: N4
+        exit: N3
         name: "increment"
         type: "int"
         nodes:
@@ -179,15 +179,10 @@ When you are given an text input of a file which includes code from one of the p
             type: "block"
             statements:
                 - "x = x + 1"
+                - "return x"
             next: N3
 
             N3:
-            type: "block"
-            statements:
-                - "return x"
-            next: N4
-
-            N4:
             type: "exit"
             return:
                 - variable:
