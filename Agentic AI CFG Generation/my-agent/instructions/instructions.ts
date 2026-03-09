@@ -7,8 +7,8 @@ When you are given an text input of a file which includes code from one of the p
     methods:
         - method:
             id: # Method IDs must follow the format M<number> (M1, M2, M3, ...). IDs will be ordered sequentially
-            entry: # The node id in the node list that represents the entry point into the method
-            exit: # The node id in the node list that represents the exit point out of the method
+            entry: # The node id in the node dictionary that represents the entry point into the method
+            exit: # The node id in the node dictionary that represents the exit point out of the method
             name: # The original method name
             type: # The return type of the method, either implied or explicit
             nodes: # A dictionary mapping Node IDs to node definitions control flow nodes in the method. Each node ID must follow the format N<number> (N1, N2, N3, ...) IDs will be ordered sequentially starting with 1 for each method
@@ -159,42 +159,42 @@ When you are given an text input of a file which includes code from one of the p
     
     Full Example:
     """
-methods:
-  - method:
-      id: M1
-      entry: N1
-      exit: N4
-      name: "increment"
-      type: "int"
-      nodes:
-        N1:
-          type: "entry"
-          arguments:
-            - argument:
-                name: x
-                type: int
-          next: N2
+    methods:
+    - method:
+        id: M1
+        entry: N1
+        exit: N4
+        name: "increment"
+        type: "int"
+        nodes:
+            N1:
+            type: "entry"
+            arguments:
+                - argument:
+                    name: x
+                    type: int
+            next: N2
 
-        N2:
-          type: "block"
-          statements:
-            - "x = x + 1"
-          next: N3
+            N2:
+            type: "block"
+            statements:
+                - "x = x + 1"
+            next: N3
 
-        N3:
-          type: "block"
-          statements:
-            - "return x"
-          next: N4
+            N3:
+            type: "block"
+            statements:
+                - "return x"
+            next: N4
 
-        N4:
-          type: "exit"
-          return:
-            - variable:
-                name: x
-                type: int
-          next: null
-    """
+            N4:
+            type: "exit"
+            return:
+                - variable:
+                    name: x
+                    type: int
+            next: null
+        """
 
 3. After generating each method's CFG, you will check and validate that:
     1. The method has only one entry and only one exit node that both exists in the node list and corresponds to the appropriate type
