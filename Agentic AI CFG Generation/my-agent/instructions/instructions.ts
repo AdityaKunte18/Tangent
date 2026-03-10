@@ -47,7 +47,7 @@ When you are given an text input of a file which includes code from one of the p
         """
         # Node ID:
             type: "block"
-            statements: # A list of consecutive, non branching or looping code statements
+            statements: # A list of consecutive, non branching or looping code statements. Does not include return statements
             next: #
 
         # Example:
@@ -130,7 +130,9 @@ When you are given an text input of a file which includes code from one of the p
         """
         # Node ID:
             type: "jump"
-            next: # Node ID of the next place in the control flow graph eg., if this is a break statement in a while loop, this will be the node directly after the conditional node. if this is a continue statement, this will be the node represented by the 'onTrue' in the last predicate of the predicate list in the previous conditional node
+            next: # Node ID of the next place in the control flow jumps to.
+                  # 'continue' statement: the loop node itself (to re-evaluate the condition and update the iterator)
+                  # 'break' statement: the loop's onFalse target, fallback to the next node directly after the loop if the loop's onFalse target is null. 
         
         # Example:
         N15:
@@ -177,26 +179,26 @@ When you are given an text input of a file which includes code from one of the p
         type: "int"
         nodes:
             N1:
-            type: "entry"
-            arguments:
-                - argument:
-                    name: x
-                    type: int
-            next: N2
+                type: "entry"
+                arguments:
+                    - argument:
+                        name: x
+                        type: int
+                next: N2
 
             N2:
-            type: "block"
-            statements:
-                - "x = x + 1"
-            next: N3
+                type: "block"
+                statements:
+                    - "x = x + 1"
+                next: N3
 
             N3:
-            type: "exit"
-            return:
-                - variable:
-                    name: x
-                    type: int
-            next: null
+                type: "exit"
+                return:
+                    - variable:
+                        name: x
+                        type: int
+                next: null
         """
 
 3. After generating each method's CFG, you will check and validate that:
