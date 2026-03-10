@@ -65,6 +65,8 @@ async function main() {
                 }
             }
         }
+
+        output = output.replace(/(```)|(```ymal)|(```yml)|(```yaml)/g, '')
         
 
         console.log(`Processing complete`)
