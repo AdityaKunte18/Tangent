@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { FunctionTool, LlmAgent } from '@google/adk'
 import { instructions } from './instructions/instructions.js'
+import { readfiles, exportfile, Export } from './tools/tooling.js'
 
 
 // export const rootAgent = new LlmAgent({
@@ -10,7 +11,23 @@ import { instructions } from './instructions/instructions.js'
 //     instruction: instructions
 // })
 
+function main() {
+    console.log('starting program')
+    const files = readfiles()
+    console.log('files read')
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const { filepath, contents } = file
+        console.log(`Processing ${filepath}...`)
 
-import { readfiles } from './tools/tooling.js'
+        console.log(`Processing complete`)
+        console.log(`Saving results`)
+        const export_data: Export = {
+            name: filepath,
+            data: '# Test YAML'
+        }
+        exportfile(export_data)
+    }
+}
 
-readfiles()
+main()
