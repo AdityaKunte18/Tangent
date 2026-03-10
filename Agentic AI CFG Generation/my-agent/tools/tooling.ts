@@ -35,7 +35,7 @@ export function readfiles(): File[] {
             })
         }
     }
-    console.log(allFiles)
+    // console.log(allFiles)
     return allFiles
 }
 

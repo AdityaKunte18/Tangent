@@ -1,1 +1,202 @@
-# Test YAML
+```yaml
+methods:
+  - method:
+      id: M1
+      entry: N1
+      exit: N3
+      name: "basic"
+      type: "void"
+      nodes:
+        N1:
+          type: "entry"
+          arguments: []
+          next: N2
+        N2:
+          type: "block"
+          statements:
+            - "int x = 1"
+            - "int y = 2"
+            - "System.out.println(x + y)"
+          next: N3
+        N3:
+          type: "exit"
+          return: []
+          next: null
+  - method:
+      id: M2
+      entry: N1
+      exit: N5
+      name: "decrement"
+      type: "int"
+      nodes:
+        N1:
+          type: "entry"
+          arguments:
+            - argument:
+                name: start_number
+                type: int
+            - argument:
+                name: times
+                type: int
+          next: N2
+        N2:
+          type: "block"
+          statements:
+            - "int value = start_number"
+          next: N3
+        N3:
+          type: "loop"
+          iteratorStart: "int i = 0"
+          iteratorUpdate: "i++"
+          startPredicate: N3a
+          predicates:
+            - predicate:
+                ID: N3a
+                statement: "i < times"
+                onTrue: N4
+                onFalse: N5
+        N4:
+          type: "block"
+          statements:
+            - "value--"
+          next: N3
+        N5:
+          type: "exit"
+          return:
+            - variable:
+                name: value
+                type: int
+          next: null
+  - method:
+      id: M3
+      entry: N1
+      exit: N7
+      name: "conditional1"
+      type: "boolean"
+      nodes:
+        N1:
+          type: "entry"
+          arguments:
+            - argument:
+                name: x
+                type: int
+            - argument:
+                name: y
+                type: int
+          next: N2
+        N2:
+          type: "conditional"
+          startPredicate: N2a
+          predicates:
+            - predicate:
+                ID: N2a
+                statement: "x + y > 0"
+                onTrue: N3
+                onFalse: N5
+        N3:
+          type: "block"
+          statements:
+            - "System.out.println(\"positive\")"
+          next: N4
+        N4:
+          type: "block"
+          statements:
+            - "return true"
+          next: N7
+        N5:
+          type: "block"
+          statements:
+            - "System.out.println(\"negative\")"
+          next: N6
+        N6:
+          type: "block"
+          statements:
+            - "return false"
+          next: N7
+        N7:
+          type: "exit"
+          return:
+            - variable:
+                name: ""
+                type: boolean
+          next: null
+  - method:
+      id: M4
+      entry: N1
+      exit: N10
+      name: "conditional2"
+      type: "void"
+      nodes:
+        N1:
+          type: "entry"
+          arguments:
+            - argument:
+                name: x
+                type: int
+            - argument:
+                name: y
+                type: int
+          next: N2
+        N2:
+          type: "conditional"
+          startPredicate: N2a
+          predicates:
+            - predicate:
+                ID: N2a
+                statement: "x > 0"
+                onTrue: N3
+                onFalse: N2b
+            - predicate:
+                ID: N2b
+                statement: "y < 0"
+                onTrue: N3
+                onFalse: N5
+        N3:
+          type: "block"
+          statements:
+            - "System.out.println(\"first true\")"
+          next: N4
+        N4:
+          type: "block"
+          statements:
+            - "return"
+          next: N10
+        N5:
+          type: "conditional"
+          startPredicate: N5a
+          predicates:
+            - predicate:
+                ID: N5a
+                statement: "x < 0"
+                onTrue: N5b
+                onFalse: N8
+            - predicate:
+                ID: N5b
+                statement: "y > 0"
+                onTrue: N6
+                onFalse: N8
+        N6:
+          type: "block"
+          statements:
+            - "System.out.println(\"second true\")"
+          next: N7
+        N7:
+          type: "block"
+          statements:
+            - "return"
+          next: N10
+        N8:
+          type: "block"
+          statements:
+            - "System.out.println(\"both false\")"
+          next: N9
+        N9:
+          type: "block"
+          statements:
+            - "return"
+          next: N10
+        N10:
+          type: "exit"
+          return: []
+          next: null
+```
