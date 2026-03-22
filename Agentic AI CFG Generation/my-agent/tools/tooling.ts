@@ -15,38 +15,72 @@ export interface Export {
 
 const validExtentions = ['.py', '.c', '.java']
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const inputRoot = path.join(__dirname, '../input')
+const outputRoot = path.join(__dirname, '../output')
+
+function normalizeContents(contents: string): string {
+    return contents.replace(/\r\n?/g, '\n')
+}
+
+function createFileRecord(filepath: string, contents: string): File {
+    return {
+        filepath: path.basename(filepath),
+        extention: path.extname(filepath).toLocaleLowerCase(),
+        contents: normalizeContents(contents)
+    }
+}
+
+export function isSupportedExtention(extention: string): boolean {
+    return validExtentions.includes(extention.toLocaleLowerCase())
+}
+
 export function readfiles(): File[] {
-    const root = './input'
-    const files: fs.Dirent[] = fs.readdirSync(root, { withFileTypes: true })
+    const files: fs.Dirent[] = fs.readdirSync(inputRoot, { withFileTypes: true })
+        .sort((left, right) => left.name.localeCompare(right.name))
     const allFiles: File[] = []
     for (let i = 0; i < files.length; i++) {
         const file = files[i]
+        if (!file.isFile()) {
+            continue
+        }
+
         const extention = path.extname(file.name).toLocaleLowerCase()
-        if (validExtentions.includes(extention)) {
-            const __filename = fileURLToPath(import.meta.url)
-            const __dirname = path.dirname(__filename)
-            const data = fs.readFileSync(path.join(__dirname, '../input', file.name), 'utf-8')
-            let contents = data
-            contents = contents.replace(/\r\n/g, ' ') // Note to self: It might be better to have these in here for the agent, might not. If agent is having issues, try removing this line
-            allFiles.push({
-                filepath: file.name,
-                extention,
-                contents
-            })
+        if (isSupportedExtention(extention)) {
+            const data = fs.readFileSync(path.join(inputRoot, file.name), 'utf-8')
+            allFiles.push(createFileRecord(file.name, data))
         }
     }
     // console.log(allFiles)
     return allFiles
 }
 
+export function readFileAtPath(filepath: string): File {
+    const resolvedPath = path.resolve(filepath)
+
+    if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`File does not exist: ${resolvedPath}`)
+    }
+
+    const stat = fs.statSync(resolvedPath)
+    if (!stat.isFile()) {
+        throw new Error(`Path is not a file: ${resolvedPath}`)
+    }
+
+    const extention = path.extname(resolvedPath).toLocaleLowerCase()
+    if (!isSupportedExtention(extention)) {
+        throw new Error(`Unsupported file extension '${extention}'. Supported extensions: ${validExtentions.join(', ')}`)
+    }
+
+    const data = fs.readFileSync(resolvedPath, 'utf-8')
+    return createFileRecord(resolvedPath, data)
+}
+
 export function exportfile(export_data: Export): void {
     const {name, data} = export_data
     const filename = `${name}.yaml`
-
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    const __path = path.join(__dirname, '../output', filename)
+    const __path = path.join(outputRoot, filename)
 
     fs.writeFileSync(__path, data, 'utf-8')
 }
-

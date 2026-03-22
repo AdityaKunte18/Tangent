@@ -1,216 +1,127 @@
-export const instructions = `
-You are a helpful agent who can parse Python, C, & Java code and can output a valid control flow graph of said code in YAML
-When you are given an text input of a file which includes code from one of the previously mentioned languages you will:
-1. Find all of the methods in the file
-2. For each method you will generate valid YAML that consist of the following:
-    """
-    methods:
-        - method:
-            id: # Method IDs must follow the format M<number> (M1, M2, M3, ...). IDs will be ordered sequentially
-            entry: # The node id in the node dictionary that represents the entry point into the method
-            exit: # The node id in the node dictionary that represents the exit point out of the method
-            name: # The original method name
-            type: # The return type of the method, either implied or explicit
-            nodes: # A dictionary mapping Node IDs to node definitions control flow nodes in the method. Each node ID must follow the format N<number> (N1, N2, N3, ...) IDs will be ordered sequentially starting with 1 for each method
+import { CfgMethodDraft, DiscoveredMethod } from '../cfg/schema.js'
 
-    # Example:
-    methods:
-        - method:
-            id: M1
-            entry: N1
-            exit: N20
-            name: "doSomething"
-            type: "int"
-            nodes:
-                N1: {}
-    """
+export const discoveryInstruction = `
+You extract function and method definitions from a source file.
 
-    There are different valid node types
-        1. Entry Node: Represents the entry point into the method. Usually denoted as "N1".
-        """
-        # Node ID:
-            type: "entry"
-            arguments: # A list of argument (their names and types). [] if no arguments are provided
-            next: # The next node ID
+Return JSON only. Do not include markdown, comments, explanations, or code fences.
 
-        # Example:
-        N1:
-            type: "entry"
-            arguments:
-                - argument:
-                    name: x
-                    type: int
-            next: N2
-                
-        """
-        2. Block Node: Represents several consecutive, non branching or looping code statements
-        """
-        # Node ID:
-            type: "block"
-            statements: # A list of consecutive, non branching or looping code statements. Does not include return statements
-            next: #
+Requirements:
+- Identify every function or method defined in the file.
+- Preserve each method's source as a standalone code snippet in the original language.
+- Preserve indentation and formatting in the source field.
+- Infer the return type when it is implicit.
+- If no methods exist, return an empty methods array.
+- The language field should be your best guess such as "python", "c", or "java".
+`.trim()
 
-        # Example:
-        N2:
-            type: "block"
-            statements:
-                - "x = x + 2"
-            next: N3
-        """
-        3. Conditional Node: Represents a conditional (if) branching statement
-        """
-        # Node ID:
-            type: "conditional"
-            startPredicate: # Predicate ID of the first predicate in the predicates list
-            predicates: # A list of predicate nodes
-        
-        # Example:
-        N3:
-            type: "conditional"
-            startPredicate: N3a
-            predicates:
-                - predicate:
-                    ID: N3a
-                    statement: "x < 5"
-                    onTrue: N4
-                    onFalse: N5
-        """
-        4. Predicate Node: Represents a conditional predicate. Each Predicate ID must follow the format N<NodeID number><letter> (N2a, N2b, ...). Examples: N3a, N12a, N12b
-        """
-        predicate:
-            ID: # Predicate ID
-            statement: # A single predicate statement eg., "i < 5"
-            onTrue: # Node ID of the next node in the control flow graph where code will be executed if the condition is true (only if the predicate is the only predicate in the conditional or if it is the last predicate in the list) or Predicate ID of the next predicate if it is not the last predicate in the predicate list. Can be null if true is unreachable
-            onFalse: # Node ID of the next node in the control flow graph where code will be executed if the condition is false (only if the predicate is the only predicate in the conditional) or Predicate ID if the next predicate is reached through the "OR" operator. Can be null if  false is unreachable
+export const cfgGenerationInstruction = `
+You generate a control-flow graph draft for a single method or function.
 
-        # Example:
-        - predicate:
-            ID: N3a
-            statement: "x < 5"
-            onTrue: N4
-            onFalse: N5
-        """
-        5. Loop Node: Represents a looping statement
-        """
-        # Node ID:
-            type: "loop"
-            iteratorStart: # statement that indicates the starting state of the loop iterator. Can be 'null' if a) none is provided or b) loop represents a while loop
-            iteratorUpdate: # statement that indicates how the iterator state will be updated on each iteration through the loop. Can be null if a) none is provided or b) loop represents a while loop
-            startPredicate: # predicate ID of the first predicate in the list of predicates
-            predicates: # A list of predicate nodes
+Return JSON only. Do not include markdown, comments, explanations, or code fences.
 
-        # Example:
-        N8:
-            type: "loop"
-            iteratorStart: "int i = 0"
-            iteratorUpdate: "i++"
-            startPredicate: N8a
-            predicates:
-                - predicate:
-                    ID: N8a
-                    statement: "i < 10"
-                    onTrue: N9
-                    onFalse: N12  
-        """
-            5a. For example, a 'while(true) {}' loop will look as follows:
-            """
-            N8: # assuming the generated node id for this conditional node is 'N8'
-                type: "loop"
-                iteratorStart: null
-                iteratorUpdate: null
-                startPredicate: N8a
-                predicates:
-                    - predicate:
-                        ID: N8a
-                        statement: "true"
-                        onTrue: N10 # assuming the generated node id for the next node in the control flow graph inside the loop is 'N10'
-                        onFalse: null # unreachable
-            """
-        6. Jump Node: Represents a break or continue like statement
-        """
-        # Node ID:
-            type: "jump"
-            next: # Node ID of the next place in the control flow jumps to.
-                  # 'continue' statement: the loop node itself (to re-evaluate the condition and update the iterator)
-                  # 'break' statement: the loop's onFalse target, fallback to the next node directly after the loop if the loop's onFalse target is null. 
-        
-        # Example:
-        N15:
-            type: "jump"
-            next: N17    
-        """
-        7. Exit Node: Represents the exit point of a method eg., a return statement
-        """
-        # Node ID:
-            type: "exit"
-            return: # A list of 'variable'. [] if return does not have any variables
-            next: null
+Core rules:
+- The draft must have exactly one entry node and exactly one exit node.
+- Use temporary node and predicate ids. Final renumbering is handled outside the model.
+- All node and predicate references must resolve within the method.
+- Every node and predicate must be reachable from the entry node.
+- Do not place return, break, or continue statements inside block nodes.
+- Use jump nodes only for break and continue.
+- For conditional and loop nodes, predicates must be listed in evaluation order.
+- Every entry node must include an arguments array, even when it is empty.
+- Every block and jump node must include an explicit next field.
+- For straight-line methods, the shape should normally be entry -> block -> exit.
+- Do not emit disconnected helper blocks. If you create a side-effect block before a return, connect it to the synthetic return block or exit node.
+- For for-style loops, either encode initialization/update on the loop node or represent them as normal blocks with explicit next edges. Never leave loop init/update blocks dangling.
 
-        # Example:
-        N20:
-            type: "exit"
-            return: 
-                - variable:
-                    name: "result"
-                    type: "int"
-            next: null
-        """
-            7a. variable: Represents the name and type of variable
-            """
-            variable:
-                name: # the variable name or literal
-                type: # the variable type (implied or directly stated)
-            """
-    
-    Full Example:
-    """
-    # int increment(int x) {
-    #   x = x + 1
-    #   return x
-    # }
+Normalization rules:
+- For non-void methods with multiple return sites, introduce block nodes that assign a synthetic variable such as "_return_value = ..." and then flow into the single exit node.
+- The single exit node of a non-void method must return exactly one variable or literal.
+- For void or None-returning methods, the single exit node must return an empty list.
+- For "return;" in a void method, flow directly to the exit node instead of storing "return" inside a block.
+- Preserve source-language syntax in statements where practical.
 
+Example for a void straight-line method:
+{
+  "name": "basic",
+  "returnType": "void",
+  "parameters": [],
+  "nodes": [
+    {
+      "id": "entry",
+      "type": "entry",
+      "arguments": [],
+      "next": "body"
+    },
+    {
+      "id": "body",
+      "type": "block",
+      "statements": ["x = 1", "print(x)"],
+      "next": "exit"
+    },
+    {
+      "id": "exit",
+      "type": "exit",
+      "returnValues": [],
+      "next": null
+    }
+  ]
+}
+`.trim()
 
-    methods:
-    - method:
-        id: M1
-        entry: N1
-        exit: N3
-        name: "increment"
-        type: "int"
-        nodes:
-            N1:
-                type: "entry"
-                arguments:
-                    - argument:
-                        name: x
-                        type: int
-                next: N2
+export function buildDiscoveryPrompt(source: string, filename: string): string {
+    return `
+Analyze the following source file and extract every function or method definition.
 
-            N2:
-                type: "block"
-                statements:
-                    - "x = x + 1"
-                next: N3
+Filename: ${filename}
 
-            N3:
-                type: "exit"
-                return:
-                    - variable:
-                        name: x
-                        type: int
-                next: null
-        """
+Source file:
+\`\`\`
+${source}
+\`\`\`
+`.trim()
+}
 
-3. After generating each method's CFG, you will check and validate that:
-    1. The method has only one entry and only one exit node that both exists in the node list and corresponds to the appropriate type
-    2. Each node is reachable (There shall be no orphaned nodes)
-    3. Each predicate within a predicate list is reachable (There shall be no orphaned predicates)
-    4. Each node type is properly formatted
-    5. There shall be no duplicate node IDs, method IDs, or predicate IDs
-    6. The entire output structure shall be valid YAML
-    7. There shall be no comments, explanation, markdown, text or anything besides valid YAML
-    8. All references in 'next', 'onTrue', and 'onFalse' must refrence existing node or predicate IDs within the method
+export function buildGenerationPrompt(method: DiscoveredMethod, language: string): string {
+    return `
+Generate a CFG draft for this single method.
 
-4. If there is an error at any step, you must re generate the method's CFG until all vaidation checks pass
-5. You will not add any additional comments, explanation, markdown, text, or anything besides valid YAML to the output
-`
+Language: ${language}
+Method name: ${method.name}
+Declared return type: ${method.returnType}
+Parameters: ${JSON.stringify(method.parameters, null, 2)}
+
+Method source:
+\`\`\`
+${method.source}
+\`\`\`
+
+Focus only on this method's control flow. You do not need to reproduce surrounding file structure, imports, or unrelated methods.
+`.trim()
+}
+
+export function buildRepairPrompt(method: DiscoveredMethod, language: string, previousDraft: CfgMethodDraft, errors: string[]): string {
+    return `
+Repair the CFG draft for this method.
+
+Language: ${language}
+Method name: ${method.name}
+Declared return type: ${method.returnType}
+Parameters: ${JSON.stringify(method.parameters, null, 2)}
+
+Method source:
+\`\`\`
+${method.source}
+\`\`\`
+
+Previous CFG draft:
+\`\`\`json
+${JSON.stringify(previousDraft, null, 2)}
+\`\`\`
+
+Validation errors:
+${errors.map((error, index) => `${index + 1}. ${error}`).join('\n')}
+
+Return a corrected CFG draft that satisfies all validation errors and all core rules.
+Do not restate the method source or add unrelated surrounding-file context.
+`.trim()
+}
