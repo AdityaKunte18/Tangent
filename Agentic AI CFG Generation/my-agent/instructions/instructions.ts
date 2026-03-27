@@ -11,7 +11,7 @@ Requirements:
 - Preserve indentation and formatting in the source field.
 - Infer the return type when it is implicit.
 - If no methods exist, return an empty methods array.
-- The language field should be your best guess such as "python", "c", or "java".
+- The language field should be your best guess such as "python", "c++", or "java".
 `.trim()
 
 export const cfgGenerationInstruction = `

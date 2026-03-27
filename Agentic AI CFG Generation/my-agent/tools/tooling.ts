@@ -13,7 +13,7 @@ export interface Export {
     data: string
 }
 
-const validExtentions = ['.py', '.c', '.java']
+const validExtentions = ['.py', '.cpp', '.java']
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
