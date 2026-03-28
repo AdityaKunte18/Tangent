@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { exit } from 'process'
 import { fileURLToPath } from 'url'
 
 export interface File {
@@ -13,25 +14,7 @@ export interface Export {
     data: string
 }
 
-const validExtentions = ['.py', '.c', '.java']
-const ignoredDirectoryNames = new Set([
-    '.git',
-    '.hg',
-    '.svn',
-    '.venv',
-    'venv',
-    '__pycache__',
-    'node_modules',
-    'dist',
-    'build',
-    'target',
-    'out',
-    'bin',
-    'obj',
-    'coverage',
-    '.mypy_cache',
-    '.pytest_cache'
-])
+const validExtentions = ['.py', '.cpp', '.java']
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -42,9 +25,9 @@ function normalizeContents(contents: string): string {
     return contents.replace(/\r\n?/g, '\n')
 }
 
-function createFileRecord(filepath: string, contents: string, displayPath?: string): File {
+function createFileRecord(filepath: string, contents: string): File {
     return {
-        filepath: displayPath ?? path.basename(filepath),
+        filepath: path.basename(filepath),
         extention: path.extname(filepath).toLocaleLowerCase(),
         contents: normalizeContents(contents)
     }
@@ -54,51 +37,47 @@ export function isSupportedExtention(extention: string): boolean {
     return validExtentions.includes(extention.toLocaleLowerCase())
 }
 
-function collectSourceFilePaths(rootDir: string): string[] {
-    const entries = fs.readdirSync(rootDir, { withFileTypes: true })
-        .sort((left, right) => left.name.localeCompare(right.name))
-    const files: string[] = []
+export function readfiles(): File[] { 
+    let files: string[] = []
+    console.log(inputRoot)
+    files = recursivewalk(inputRoot)
 
-    for (const entry of entries) {
-        const entryPath = path.join(rootDir, entry.name)
-
-        if (entry.isDirectory()) {
-            if (ignoredDirectoryNames.has(entry.name)) {
-                continue
-            }
-
-            files.push(...collectSourceFilePaths(entryPath))
-            continue
-        }
-
-        if (!entry.isFile()) {
-            continue
-        }
-
-        const extention = path.extname(entry.name).toLocaleLowerCase()
-        if (!isSupportedExtention(extention)) {
-            continue
-        }
-
-        files.push(entryPath)
+    if (files.length == 0) {
+        console.error('No files found')
+        exit(-1)
     }
 
+    const output: File[] = []
+
+    for (let i = 0; i < files.length; i++) {
+        const data = fs.readFileSync(files[i], 'utf-8')
+        output.push(createFileRecord(files[i], data))
+    }
+    if (output.length == 0) {
+        console.error('No output files generated')
+        exit(-1)
+    }
+    return output
+}
+
+function recursivewalk(rootdir: string): string[] {
+    let files: string[] = []
+    const entries = fs.readdirSync(rootdir)
+    for (let i = 0; i < entries.length; i++) {
+        const entry: string = entries[i]
+        const updatedpath = path.join(rootdir, entry)
+        const stat = fs.statSync(updatedpath)
+        if (stat.isDirectory()) {
+            const newFiles = recursivewalk(updatedpath)
+            files = [...files, ...newFiles]
+        } else {
+            if (!stat.isFile()) continue
+            const entention = path.extname(updatedpath).toLocaleLowerCase()
+            if (!isSupportedExtention(entention)) continue
+            files.push(updatedpath)
+        }
+    }
     return files
-}
-
-export function readFilesFromRoot(rootDir: string): File[] {
-    const resolvedRoot = path.resolve(rootDir)
-    const files = collectSourceFilePaths(resolvedRoot)
-
-    return files.map((filepath) => {
-        const data = fs.readFileSync(filepath, 'utf-8')
-        const relativePath = path.relative(resolvedRoot, filepath)
-        return createFileRecord(filepath, data, relativePath)
-    })
-}
-
-export function readfiles(): File[] {
-    return readFilesFromRoot(inputRoot)
 }
 
 export function readFileAtPath(filepath: string): File {
@@ -125,8 +104,7 @@ export function readFileAtPath(filepath: string): File {
 export function exportfile(export_data: Export): void {
     const {name, data} = export_data
     const filename = `${name}.yaml`
-    const outputPath = path.join(outputRoot, filename)
+    const __path = path.join(outputRoot, filename)
 
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-    fs.writeFileSync(outputPath, data, 'utf-8')
+    fs.writeFileSync(__path, data, 'utf-8')
 }
