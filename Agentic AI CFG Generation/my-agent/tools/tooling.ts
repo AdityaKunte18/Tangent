@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { exit } from 'process'
 import { fileURLToPath } from 'url'
 
 export interface File {
@@ -36,24 +37,47 @@ export function isSupportedExtention(extention: string): boolean {
     return validExtentions.includes(extention.toLocaleLowerCase())
 }
 
-export function readfiles(): File[] {
-    const files: fs.Dirent[] = fs.readdirSync(inputRoot, { withFileTypes: true })
-        .sort((left, right) => left.name.localeCompare(right.name))
-    const allFiles: File[] = []
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        if (!file.isFile()) {
-            continue
-        }
+export function readfiles(): File[] { 
+    let files: string[] = []
+    console.log(inputRoot)
+    files = recursivewalk(inputRoot)
 
-        const extention = path.extname(file.name).toLocaleLowerCase()
-        if (isSupportedExtention(extention)) {
-            const data = fs.readFileSync(path.join(inputRoot, file.name), 'utf-8')
-            allFiles.push(createFileRecord(file.name, data))
+    if (files.length == 0) {
+        console.error('No files found')
+        exit(-1)
+    }
+
+    const output: File[] = []
+
+    for (let i = 0; i < files.length; i++) {
+        const data = fs.readFileSync(files[i], 'utf-8')
+        output.push(createFileRecord(files[i], data))
+    }
+    if (output.length == 0) {
+        console.error('No output files generated')
+        exit(-1)
+    }
+    return output
+}
+
+function recursivewalk(rootdir: string): string[] {
+    let files: string[] = []
+    const entries = fs.readdirSync(rootdir)
+    for (let i = 0; i < entries.length; i++) {
+        const entry: string = entries[i]
+        const updatedpath = path.join(rootdir, entry)
+        const stat = fs.statSync(updatedpath)
+        if (stat.isDirectory()) {
+            const newFiles = recursivewalk(updatedpath)
+            files = [...files, ...newFiles]
+        } else {
+            if (!stat.isFile()) continue
+            const entention = path.extname(updatedpath).toLocaleLowerCase()
+            if (!isSupportedExtention(entention)) continue
+            files.push(updatedpath)
         }
     }
-    // console.log(allFiles)
-    return allFiles
+    return files
 }
 
 export function readFileAtPath(filepath: string): File {

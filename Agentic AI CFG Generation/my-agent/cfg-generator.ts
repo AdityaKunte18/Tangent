@@ -66,7 +66,7 @@ function extractJsonFromText(raw: string): unknown {
     const trimmed = raw.trim()
 
     if (trimmed.length === 0) {
-        throw new Error('Model returned an empty response.')
+        throw new Error('empty response')
     }
 
     const withoutFence = trimmed
@@ -121,7 +121,12 @@ function isRetriableModelError(error: unknown): boolean {
         'connection reset',
         'econnreset',
         'etimedout',
-        'eai_again'
+        'eai_again',
+        'empty response',
+        'unable to parse json',
+        'unexpected token',
+        'json',
+        'parse'
     ].some((token) => message.includes(token))
 }
 
@@ -341,6 +346,7 @@ export async function runBatchFromInputDirectory(): Promise<BatchRunResult> {
     console.log('starting program')
     const files = readfiles()
     console.log('files read')
+    console.log(files.length)
     const processedFiles: string[] = []
     const failedFiles: string[] = []
 
