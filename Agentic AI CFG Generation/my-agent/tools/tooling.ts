@@ -14,6 +14,24 @@ export interface Export {
 }
 
 const validExtentions = ['.py', '.c', '.java']
+const ignoredDirectoryNames = new Set([
+    '.git',
+    '.hg',
+    '.svn',
+    '.venv',
+    'venv',
+    '__pycache__',
+    'node_modules',
+    'dist',
+    'build',
+    'target',
+    'out',
+    'bin',
+    'obj',
+    'coverage',
+    '.mypy_cache',
+    '.pytest_cache'
+])
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,9 +42,9 @@ function normalizeContents(contents: string): string {
     return contents.replace(/\r\n?/g, '\n')
 }
 
-function createFileRecord(filepath: string, contents: string): File {
+function createFileRecord(filepath: string, contents: string, displayPath?: string): File {
     return {
-        filepath: path.basename(filepath),
+        filepath: displayPath ?? path.basename(filepath),
         extention: path.extname(filepath).toLocaleLowerCase(),
         contents: normalizeContents(contents)
     }
@@ -36,24 +54,51 @@ export function isSupportedExtention(extention: string): boolean {
     return validExtentions.includes(extention.toLocaleLowerCase())
 }
 
-export function readfiles(): File[] {
-    const files: fs.Dirent[] = fs.readdirSync(inputRoot, { withFileTypes: true })
+function collectSourceFilePaths(rootDir: string): string[] {
+    const entries = fs.readdirSync(rootDir, { withFileTypes: true })
         .sort((left, right) => left.name.localeCompare(right.name))
-    const allFiles: File[] = []
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        if (!file.isFile()) {
+    const files: string[] = []
+
+    for (const entry of entries) {
+        const entryPath = path.join(rootDir, entry.name)
+
+        if (entry.isDirectory()) {
+            if (ignoredDirectoryNames.has(entry.name)) {
+                continue
+            }
+
+            files.push(...collectSourceFilePaths(entryPath))
             continue
         }
 
-        const extention = path.extname(file.name).toLocaleLowerCase()
-        if (isSupportedExtention(extention)) {
-            const data = fs.readFileSync(path.join(inputRoot, file.name), 'utf-8')
-            allFiles.push(createFileRecord(file.name, data))
+        if (!entry.isFile()) {
+            continue
         }
+
+        const extention = path.extname(entry.name).toLocaleLowerCase()
+        if (!isSupportedExtention(extention)) {
+            continue
+        }
+
+        files.push(entryPath)
     }
-    // console.log(allFiles)
-    return allFiles
+
+    return files
+}
+
+export function readFilesFromRoot(rootDir: string): File[] {
+    const resolvedRoot = path.resolve(rootDir)
+    const files = collectSourceFilePaths(resolvedRoot)
+
+    return files.map((filepath) => {
+        const data = fs.readFileSync(filepath, 'utf-8')
+        const relativePath = path.relative(resolvedRoot, filepath)
+        return createFileRecord(filepath, data, relativePath)
+    })
+}
+
+export function readfiles(): File[] {
+    return readFilesFromRoot(inputRoot)
 }
 
 export function readFileAtPath(filepath: string): File {
@@ -82,5 +127,6 @@ export function exportfile(export_data: Export): void {
     const filename = `${name}.yaml`
     const __path = path.join(outputRoot, filename)
 
+    fs.mkdirSync(path.dirname(__path), { recursive: true })
     fs.writeFileSync(__path, data, 'utf-8')
 }

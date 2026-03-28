@@ -29,6 +29,7 @@ const MODEL_OUTPUT_KEY = 'structured_output'
 const REQUEST_TIMEOUT_MS = 90_000
 const MODEL_CALL_MAX_ATTEMPTS = 3
 const MODEL_CALL_RETRY_BASE_DELAY_MS = 1_500
+const MAX_FILE_CHARS = Number(process.env.CFG_MAX_FILE_CHARS ?? '20000')
 
 let sessionCounter = 0
 
@@ -123,6 +124,17 @@ function isRetriableModelError(error: unknown): boolean {
         'etimedout',
         'eai_again'
     ].some((token) => message.includes(token))
+}
+
+function assertFileFitsDiscoveryWindow(file: File): void {
+    if (file.contents.length <= MAX_FILE_CHARS) {
+        return
+    }
+
+    throw new Error(
+        `File '${file.filepath}' is too large for whole-file discovery (${file.contents.length} chars > ${MAX_FILE_CHARS}). ` +
+        'The recursive loader can now find much larger files, so skip oversized files or raise CFG_MAX_FILE_CHARS intentionally.'
+    )
 }
 
 const discoveryAgent = new LlmAgent({
@@ -294,6 +306,8 @@ async function generateValidatedCfg(method: DiscoveredMethod, language: string):
 }
 
 export async function generateCfgForFile(file: File, languageOverride?: string): Promise<string> {
+    assertFileFitsDiscoveryWindow(file)
+
     const discovery = await runStructuredAgentWithRetries(
         discoveryRunner,
         discoveryAgent.name,
@@ -345,7 +359,7 @@ export async function runBatchFromInputDirectory(): Promise<BatchRunResult> {
     const failedFiles: string[] = []
 
     for (const file of files) {
-        console.log(`Processing ${file.filepath}...`)
+        console.log(`Processing ${file.filepath} (${file.contents.length} chars)...`)
 
         try {
             const output = await generateCfgForFile(file)
