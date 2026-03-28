@@ -125,8 +125,8 @@ export function readFileAtPath(filepath: string): File {
 export function exportfile(export_data: Export): void {
     const {name, data} = export_data
     const filename = `${name}.yaml`
-    const __path = path.join(outputRoot, filename)
+    const outputPath = path.join(outputRoot, filename)
 
-    fs.mkdirSync(path.dirname(__path), { recursive: true })
-    fs.writeFileSync(__path, data, 'utf-8')
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, data, 'utf-8')
 }
