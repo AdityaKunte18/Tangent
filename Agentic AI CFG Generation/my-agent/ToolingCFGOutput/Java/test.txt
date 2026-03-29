@@ -1,0 +1,110 @@
+Method: method001
+"ENTRY" -> "int x = 1;"
+"int x = 1;" -> "int y = 2;"
+"int y = 2;" -> "System.out.println(x + y);"
+Method: method002
+"ENTRY" -> "if (x + y > 0) {
+    System.out.println("positive");
+    return true;
+}"
+"if (x + y > 0) {
+    System.out.println("positive");
+    return true;
+}" -> "System.out.println("positive");"
+"System.out.println("positive");" -> "return true;"
+Method: method003
+"ENTRY" -> "if (x > 0 || y < 0) {
+    return "first true";
+} else if (x < 0 && y > 0) {
+    return "second true";
+}"
+"if (x > 0 || y < 0) {
+    return "first true";
+} else if (x < 0 && y > 0) {
+    return "second true";
+}" -> "return "first true";"
+Method: method004
+"ENTRY" -> "if (!(x > y) && (x + y < 0 || x * y <= 0)) {
+    return "The values of x and y are {x} and {y}\n";
+}"
+"if (!(x > y) && (x + y < 0 || x * y <= 0)) {
+    return "The values of x and y are {x} and {y}\n";
+}" -> "return "The values of x and y are {x} and {y}\n";"
+Method: method005
+"ENTRY" -> "int loopCounter = 0;"
+"int loopCounter = 0;" -> "for (int i = 0; i < y; i += x) {
+    loopCounter++;
+    if (loopCounter % 5 == 0) {
+        loopCounter += 2;
+    }
+}"
+"for (int i = 0; i < y; i += x) {
+    loopCounter++;
+    if (loopCounter % 5 == 0) {
+        loopCounter += 2;
+    }
+}" -> "return loopCounter;"
+Method: method006
+"ENTRY" -> "int loopCounter = 0;"
+"int loopCounter = 0;" -> "if (x > 0 && y > 0) {
+    while (loopCounter < (x + y)) {
+        loopCounter++;
+    }
+    return loopCounter;
+}"
+"if (x > 0 && y > 0) {
+    while (loopCounter < (x + y)) {
+        loopCounter++;
+    }
+    return loopCounter;
+}" -> "while (loopCounter < (x + y)) {
+    loopCounter++;
+}"
+"while (loopCounter < (x + y)) {
+    loopCounter++;
+}" -> "return loopCounter;"
+Method: method007
+"ENTRY" -> "int loopCounter = 0;"
+"int loopCounter = 0;" -> "for (int i = 0; i < y; i++) {
+    for (int j = x; j >= 0; j--) {
+        if (j == i) {
+            loopCounter += 2;
+        } else {
+            loopCounter += 3;
+        }
+    }
+}"
+"for (int i = 0; i < y; i++) {
+    for (int j = x; j >= 0; j--) {
+        if (j == i) {
+            loopCounter += 2;
+        } else {
+            loopCounter += 3;
+        }
+    }
+}" -> "return loopCounter;"
+Method: method008
+"ENTRY" -> "int loopCounter = 0;"
+"int loopCounter = 0;" -> "int other = 0;"
+"int other = 0;" -> "do {
+    loopCounter++;
+    other += (loopCounter + y);
+} while (loopCounter % x == other);"
+"do {
+    loopCounter++;
+    other += (loopCounter + y);
+} while (loopCounter % x == other);" -> "return loopCounter;"
+Method: method009
+"ENTRY" -> "int loopCounter = 0;"
+"int loopCounter = 0;" -> "while (true) {
+    loopCounter++;
+    if (loopCounter + x == y) {
+        break;
+    }
+}"
+"while (true) {
+    loopCounter++;
+    if (loopCounter + x == y) {
+        break;
+    }
+}" -> "return loopCounter;"
