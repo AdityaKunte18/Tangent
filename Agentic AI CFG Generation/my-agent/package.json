@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx agent.ts",
+    "agent": "npm run dev",
     "typecheck": "tsc --noEmit",
     "test:cfg-regression": "node --import tsx ./scripts/cfg-regression.ts"
   },
