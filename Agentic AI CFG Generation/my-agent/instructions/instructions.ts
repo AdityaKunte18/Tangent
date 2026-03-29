@@ -1,17 +1,37 @@
 import { CfgMethodDraft, DiscoveredMethod } from '../cfg/schema.js'
 
 export const discoveryInstruction = `
-You extract function and method definitions from a source file.
+You extract function and method definitions from a numbered chunk of a source file.
 
 Return JSON only. Do not include markdown, comments, explanations, or code fences.
 
 Requirements:
-- Identify every function or method defined in the file.
-- Preserve each method's source as a standalone code snippet in the original language.
-- Preserve indentation and formatting in the source field.
-- Infer the return type when it is implicit.
+- Return an object with exactly two top-level fields: "language" and "methods".
+- Every method object must include "name", "returnType", "parameters", "startLine", and "endLine".
+- Parameters must always be an array, even when the method takes no arguments.
+- The source file may be syntactically imperfect. Work best-effort.
+- Identify every function or method whose definition starts in the provided chunk.
+- The numbered prefix is metadata. It is not part of the source code.
+- Use the absolute line numbers shown in the numbered source.
+- Return startLine and endLine for each discovered method in the original file.
+- Only include methods that are fully visible in the provided chunk.
+- Infer the return type when it is implicit. Use "void" when nothing is returned and "unknown" only when you truly cannot infer it.
 - If no methods exist, return an empty methods array.
 - The language field should be your best guess such as "python", "c++", or "java".
+
+Example:
+{
+  "language": "python",
+  "methods": [
+    {
+      "name": "basic",
+      "returnType": "void",
+      "parameters": [],
+      "startLine": 10,
+      "endLine": 13
+    }
+  ]
+}
 `.trim()
 
 export const cfgGenerationInstruction = `
@@ -68,16 +88,24 @@ Example for a void straight-line method:
 }
 `.trim()
 
-export function buildDiscoveryPrompt(source: string, filename: string): string {
+export function buildDiscoveryPrompt(
+    numberedChunkSource: string,
+    filename: string,
+    startLine: number,
+    endLine: number
+): string {
     return `
-Analyze the following source file and extract every function or method definition.
+Analyze the following source file chunk and extract every function or method whose definition starts inside this chunk.
 
 Filename: ${filename}
+Chunk line range: ${startLine}-${endLine}
 
-Source file:
-\`\`\`
-${source}
-\`\`\`
+Each source line is prefixed as "<absoluteLineNumber>: ". The numeric prefix is metadata and is not part of the code.
+
+Numbered source chunk:
+${numberedChunkSource}
+
+Return the methods using absolute line numbers from the numbered source.
 `.trim()
 }
 

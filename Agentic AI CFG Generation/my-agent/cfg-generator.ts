@@ -7,11 +7,13 @@ import {
     cfgDraftSchema,
     CfgMethodDraft,
     discoveryResultSchema,
+    DiscoveryResult,
     DiscoveredMethod
 } from './cfg/schema.js'
 import { finalizeDocument } from './cfg/finalize.js'
 import { normalizeDraft } from './cfg/normalize.js'
 import { validateMethodDraft } from './cfg/validate.js'
+import { discoverMethodsLocally } from './discovery/local-discovery.js'
 import {
     buildDiscoveryPrompt,
     buildGenerationPrompt,
@@ -29,7 +31,9 @@ const MODEL_OUTPUT_KEY = 'structured_output'
 const REQUEST_TIMEOUT_MS = 90_000
 const MODEL_CALL_MAX_ATTEMPTS = 3
 const MODEL_CALL_RETRY_BASE_DELAY_MS = 1_500
-const MAX_FILE_CHARS = Number(process.env.CFG_MAX_FILE_CHARS ?? '20000')
+const DISCOVERY_CHUNK_LINES = Number(process.env.CFG_DISCOVERY_CHUNK_LINES ?? '40')
+const DISCOVERY_CHUNK_OVERLAP_LINES = Number(process.env.CFG_DISCOVERY_CHUNK_OVERLAP_LINES ?? '10')
+const MIN_DISCOVERY_CHUNK_LINES = Number(process.env.CFG_MIN_DISCOVERY_CHUNK_LINES ?? '12')
 
 let sessionCounter = 0
 
@@ -45,6 +49,17 @@ export interface BatchRunResult {
     failedFiles: string[]
 }
 
+interface DiscoveryChunk {
+    startLine: number
+    endLine: number
+    numberedSource: string
+}
+
+interface ChunkDiscoveryResult {
+    chunk: DiscoveryChunk
+    discovery: DiscoveryResult
+}
+
 function createSessionId(prefix: string): string {
     sessionCounter += 1
     return `${prefix}_${String(sessionCounter).padStart(4, '0')}`
@@ -56,6 +71,8 @@ export function inferLanguageFromExtension(extention: string): string {
             return 'python'
         case '.c':
             return 'c'
+        case '.cpp':
+            return 'c++'
         case '.java':
             return 'java'
         default:
@@ -131,15 +148,201 @@ function isRetriableModelError(error: unknown): boolean {
     ].some((token) => message.includes(token))
 }
 
-function assertFileFitsDiscoveryWindow(file: File): void {
-    if (file.contents.length <= MAX_FILE_CHARS) {
-        return
+function splitLines(source: string): string[] {
+    return source.split('\n')
+}
+
+function createChunk(lines: string[], startLine: number, endLine: number): DiscoveryChunk {
+    const boundedStartLine = Math.max(1, startLine)
+    const boundedEndLine = Math.min(lines.length, endLine)
+    const numberedSource = lines
+        .slice(boundedStartLine - 1, boundedEndLine)
+        .map((line, index) => `${boundedStartLine + index}: ${line}`)
+        .join('\n')
+
+    return {
+        startLine: boundedStartLine,
+        endLine: boundedEndLine,
+        numberedSource
+    }
+}
+
+function createDiscoveryChunks(source: string): DiscoveryChunk[] {
+    const lines = splitLines(source)
+    const chunkSize = Math.max(1, DISCOVERY_CHUNK_LINES)
+    const overlap = Math.max(0, Math.min(DISCOVERY_CHUNK_OVERLAP_LINES, chunkSize - 1))
+    const step = Math.max(1, chunkSize - overlap)
+    const chunks: DiscoveryChunk[] = []
+
+    for (let startIndex = 0; startIndex < lines.length; startIndex += step) {
+        const endIndex = Math.min(lines.length, startIndex + chunkSize)
+        chunks.push(createChunk(lines, startIndex + 1, endIndex))
+
+        if (endIndex >= lines.length) {
+            break
+        }
     }
 
-    throw new Error(
-        `File '${file.filepath}' is too large for whole-file discovery (${file.contents.length} chars > ${MAX_FILE_CHARS}). ` +
-        'The recursive loader can now find much larger files, so skip oversized files or raise CFG_MAX_FILE_CHARS intentionally.'
-    )
+    return chunks
+}
+
+function extractSourceByLineRange(source: string, startLine: number, endLine: number): string {
+    const lines = splitLines(source)
+
+    if (startLine < 1 || endLine < startLine || endLine > lines.length) {
+        throw new Error(`Invalid method line range ${startLine}-${endLine}.`)
+    }
+
+    return lines.slice(startLine - 1, endLine).join('\n').trimEnd()
+}
+
+function inferDominantLanguage(results: DiscoveryResult[], fallbackLanguage: string): string {
+    const counts = new Map<string, number>()
+
+    for (const result of results) {
+        const language = result.language.trim().toLowerCase()
+        if (language.length === 0) {
+            continue
+        }
+
+        counts.set(language, (counts.get(language) ?? 0) + 1)
+    }
+
+    const dominantLanguage = [...counts.entries()]
+        .sort((left, right) => right[1] - left[1])[0]?.[0]
+
+    return dominantLanguage ?? fallbackLanguage
+}
+
+function chunkLineCount(chunk: DiscoveryChunk): number {
+    return chunk.endLine - chunk.startLine + 1
+}
+
+function splitDiscoveryChunk(lines: string[], chunk: DiscoveryChunk): DiscoveryChunk[] {
+    const size = chunkLineCount(chunk)
+    if (size <= 1) {
+        return [chunk]
+    }
+
+    const midpoint = Math.floor((chunk.startLine + chunk.endLine) / 2)
+    const splitOverlap = Math.max(2, Math.min(DISCOVERY_CHUNK_OVERLAP_LINES, Math.floor(size / 4)))
+    const left = createChunk(lines, chunk.startLine, Math.min(lines.length, midpoint + splitOverlap))
+    const right = createChunk(lines, Math.max(chunk.startLine + 1, midpoint - splitOverlap + 1), chunk.endLine)
+
+    if (
+        left.startLine === chunk.startLine &&
+        left.endLine === chunk.endLine &&
+        right.startLine === chunk.startLine &&
+        right.endLine === chunk.endLine
+    ) {
+        return [chunk]
+    }
+
+    if (left.startLine === right.startLine && left.endLine === right.endLine) {
+        return [left]
+    }
+
+    return [left, right]
+}
+
+async function discoverChunkWithFallback(
+    file: File,
+    lines: string[],
+    chunk: DiscoveryChunk
+): Promise<ChunkDiscoveryResult[]> {
+    try {
+        const discovery = await runStructuredAgentWithRetries(
+            discoveryRunner,
+            discoveryAgent.name,
+            buildDiscoveryPrompt(chunk.numberedSource, file.filepath, chunk.startLine, chunk.endLine),
+            discoveryResultSchema,
+            'discover',
+            MODEL_CALL_MAX_ATTEMPTS
+        )
+
+        return [{ chunk, discovery }]
+    } catch (error) {
+        const size = chunkLineCount(chunk)
+        const canSplit = size > Math.max(1, MIN_DISCOVERY_CHUNK_LINES)
+
+        if (!canSplit || !isRetriableModelError(error)) {
+            throw error
+        }
+
+        console.warn(
+            `Discovery failed for ${file.filepath} chunk ${chunk.startLine}-${chunk.endLine}: ${getErrorMessage(error)}. Splitting chunk.`
+        )
+
+        const splitChunks = splitDiscoveryChunk(lines, chunk)
+        if (splitChunks.length <= 1) {
+            throw error
+        }
+
+        const nestedResults: ChunkDiscoveryResult[] = []
+        for (const splitChunk of splitChunks) {
+            const results = await discoverChunkWithFallback(file, lines, splitChunk)
+            nestedResults.push(...results)
+        }
+
+        return nestedResults
+    }
+}
+
+async function discoverMethods(file: File): Promise<{
+    language: string
+    methods: DiscoveredMethod[]
+}> {
+    const localDiscovery = discoverMethodsLocally(file)
+    if (localDiscovery.methods.length > 0) {
+        return localDiscovery
+    }
+
+    const lines = splitLines(file.contents)
+    const chunks = createDiscoveryChunks(file.contents)
+    const chunkResults: DiscoveryResult[] = []
+    const discoveredMethodMap = new Map<string, DiscoveredMethod>()
+
+    for (const chunk of chunks) {
+        const discoveries = await discoverChunkWithFallback(file, lines, chunk)
+
+        for (const { chunk: resolvedChunk, discovery } of discoveries) {
+            chunkResults.push(discovery)
+
+            for (const method of discovery.methods) {
+                if (method.startLine < resolvedChunk.startLine || method.startLine > resolvedChunk.endLine) {
+                    continue
+                }
+
+                if (method.endLine > resolvedChunk.endLine || method.endLine < method.startLine) {
+                    continue
+                }
+
+                const key = `${method.name}|${method.startLine}|${method.endLine}`
+                if (discoveredMethodMap.has(key)) {
+                    continue
+                }
+
+                try {
+                    discoveredMethodMap.set(key, {
+                        ...method,
+                        source: extractSourceByLineRange(file.contents, method.startLine, method.endLine)
+                    })
+                } catch (error) {
+                    console.warn(
+                        `Skipping invalid discovered method '${method.name}' in ${file.filepath}: ${getErrorMessage(error)}`
+                    )
+                }
+            }
+        }
+    }
+
+    const methods = [...discoveredMethodMap.values()]
+        .sort((left, right) => left.startLine - right.startLine)
+
+    return {
+        language: inferDominantLanguage(chunkResults, inferLanguageFromExtension(file.extention)),
+        methods
+    }
 }
 
 const discoveryAgent = new LlmAgent({
@@ -196,6 +399,8 @@ async function runStructuredAgent<T>(runner: Runner, agentName: string, prompt: 
 
     const collectResponse = async (): Promise<T> => {
         let rawText = ''
+        let streamedStructuredOutput: unknown
+        let agentError: Error | null = null
 
         const stream = runner.runAsync({
             userId: USER_ID,
@@ -211,6 +416,16 @@ async function runStructuredAgent<T>(runner: Runner, agentName: string, prompt: 
         })
 
         for await (const event of stream) {
+            if (event.errorMessage) {
+                const code = event.errorCode ? `${event.errorCode}: ` : ''
+                agentError = new Error(`${code}${event.errorMessage}`)
+            }
+
+            const stateDelta = event.actions?.stateDelta
+            if (stateDelta && MODEL_OUTPUT_KEY in stateDelta) {
+                streamedStructuredOutput = stateDelta[MODEL_OUTPUT_KEY]
+            }
+
             if (event.author !== agentName || !event.content?.parts) {
                 continue
             }
@@ -222,13 +437,17 @@ async function runStructuredAgent<T>(runner: Runner, agentName: string, prompt: 
             }
         }
 
+        if (agentError) {
+            throw agentError
+        }
+
         const session = await sessionService.getSession({
             appName: APP_NAME,
             userId: USER_ID,
             sessionId
         })
 
-        const structuredState = session?.state[MODEL_OUTPUT_KEY]
+        const structuredState = streamedStructuredOutput ?? session?.state[MODEL_OUTPUT_KEY]
         const parsedValue = structuredState ?? extractJsonFromText(rawText)
         return schema.parse(parsedValue)
     }
@@ -311,16 +530,7 @@ async function generateValidatedCfg(method: DiscoveredMethod, language: string):
 }
 
 export async function generateCfgForFile(file: File, languageOverride?: string): Promise<string> {
-    assertFileFitsDiscoveryWindow(file)
-
-    const discovery = await runStructuredAgentWithRetries(
-        discoveryRunner,
-        discoveryAgent.name,
-        buildDiscoveryPrompt(file.contents, file.filepath),
-        discoveryResultSchema,
-        'discover',
-        MODEL_CALL_MAX_ATTEMPTS
-    )
+    const discovery = await discoverMethods(file)
 
     const language = languageOverride?.trim().length
         ? languageOverride

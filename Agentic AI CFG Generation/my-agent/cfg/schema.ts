@@ -10,16 +10,17 @@ export const variableSchema = z.object({
     type: z.string().trim().min(1)
 })
 
-export const discoveredMethodSchema = z.object({
+export const discoveredMethodLocationSchema = z.object({
     name: z.string().trim().min(1),
     returnType: z.string().trim().min(1),
     parameters: z.array(parameterSchema),
-    source: z.string().trim().min(1)
+    startLine: z.number().int().positive(),
+    endLine: z.number().int().positive()
 })
 
 export const discoveryResultSchema = z.object({
     language: z.string().trim().min(1),
-    methods: z.array(discoveredMethodSchema)
+    methods: z.array(discoveredMethodLocationSchema)
 })
 
 export const cfgPredicateSchema = z.object({
@@ -51,11 +52,15 @@ export const cfgDraftSchema = z.object({
 
 export type Parameter = z.infer<typeof parameterSchema>
 export type Variable = z.infer<typeof variableSchema>
-export type DiscoveredMethod = z.infer<typeof discoveredMethodSchema>
+export type DiscoveredMethodLocation = z.infer<typeof discoveredMethodLocationSchema>
 export type DiscoveryResult = z.infer<typeof discoveryResultSchema>
 export type CfgPredicate = z.infer<typeof cfgPredicateSchema>
 export type CfgNodeDraft = z.infer<typeof cfgNodeSchema>
 export type CfgMethodDraft = z.infer<typeof cfgDraftSchema>
+
+export interface DiscoveredMethod extends DiscoveredMethodLocation {
+    source: string
+}
 
 export interface FinalPredicate {
     predicate: {

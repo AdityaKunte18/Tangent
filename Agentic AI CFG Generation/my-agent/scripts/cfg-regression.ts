@@ -3,15 +3,27 @@ import { normalizeDraft } from '../cfg/normalize.js'
 import { validateMethodDraft } from '../cfg/validate.js'
 import { CfgMethodDraft, DiscoveredMethod } from '../cfg/schema.js'
 
+type RegressionMethodInput = Omit<DiscoveredMethod, 'startLine' | 'endLine'>
+
 interface CfgRegressionCase {
     name: string
-    method: DiscoveredMethod
+    method: RegressionMethodInput
     draft: CfgMethodDraft
     assertNormalized: (draft: CfgMethodDraft) => void
 }
 
+function materializeRegressionMethod(method: RegressionMethodInput): DiscoveredMethod {
+    const lineCount = Math.max(1, method.source.split('\n').length)
+
+    return {
+        ...method,
+        startLine: 1,
+        endLine: lineCount
+    }
+}
+
 function runRegressionCase(testCase: CfgRegressionCase): void {
-    const normalized = normalizeDraft(testCase.method, testCase.draft)
+    const normalized = normalizeDraft(materializeRegressionMethod(testCase.method), testCase.draft)
     const validation = validateMethodDraft(normalized)
 
     assert.equal(validation.valid, true, `${testCase.name} should validate. Errors: ${validation.errors.join(' | ')}`)
