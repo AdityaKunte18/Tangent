@@ -50,6 +50,93 @@ export const cfgDraftSchema = z.object({
     nodes: z.array(cfgNodeSchema).min(2)
 })
 
+export interface MethodPlanBlockStep {
+    kind: 'block'
+    statements: string[]
+}
+
+export interface MethodPlanReturnStep {
+    kind: 'return'
+    expression: string | null
+}
+
+export interface MethodPlanBreakStep {
+    kind: 'break'
+}
+
+export interface MethodPlanContinueStep {
+    kind: 'continue'
+}
+
+export interface MethodPlanIfStep {
+    kind: 'if'
+    condition: string
+    then: MethodPlanStep[]
+    else: MethodPlanStep[]
+}
+
+export interface MethodPlanLoopStep {
+    kind: 'loop'
+    loopType: 'for' | 'while' | 'do-while' | 'foreach' | 'unknown'
+    condition: string
+    iteratorStart: string | null
+    iteratorUpdate: string | null
+    body: MethodPlanStep[]
+}
+
+export type MethodPlanStep =
+    | MethodPlanBlockStep
+    | MethodPlanReturnStep
+    | MethodPlanBreakStep
+    | MethodPlanContinueStep
+    | MethodPlanIfStep
+    | MethodPlanLoopStep
+
+export interface MethodPlan {
+    name: string
+    returnType: string
+    parameters: Parameter[]
+    body: MethodPlanStep[]
+}
+
+export const methodPlanStepSchema: z.ZodType<MethodPlanStep> = z.lazy(() => z.discriminatedUnion('kind', [
+    z.object({
+        kind: z.literal('block'),
+        statements: z.array(z.string().trim().min(1)).min(1)
+    }),
+    z.object({
+        kind: z.literal('return'),
+        expression: z.string().trim().min(1).nullable().optional().default(null)
+    }),
+    z.object({
+        kind: z.literal('break')
+    }),
+    z.object({
+        kind: z.literal('continue')
+    }),
+    z.object({
+        kind: z.literal('if'),
+        condition: z.string().trim().optional().default(''),
+        then: z.array(methodPlanStepSchema),
+        else: z.array(methodPlanStepSchema).default([])
+    }),
+    z.object({
+        kind: z.literal('loop'),
+        loopType: z.enum(['for', 'while', 'do-while', 'foreach', 'unknown']),
+        condition: z.string().trim().optional().default(''),
+        iteratorStart: z.string().trim().min(1).nullable().default(null),
+        iteratorUpdate: z.string().trim().min(1).nullable().default(null),
+        body: z.array(methodPlanStepSchema)
+    })
+]))
+
+export const methodPlanSchema = z.object({
+    name: z.string().trim().min(1),
+    returnType: z.string().trim().min(1),
+    parameters: z.array(parameterSchema),
+    body: z.array(methodPlanStepSchema)
+})
+
 export type Parameter = z.infer<typeof parameterSchema>
 export type Variable = z.infer<typeof variableSchema>
 export type DiscoveredMethodLocation = z.infer<typeof discoveredMethodLocationSchema>

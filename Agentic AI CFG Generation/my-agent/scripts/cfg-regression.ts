@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
+import { compileMethodPlan } from '../cfg/compile-plan.js'
 import { normalizeDraft } from '../cfg/normalize.js'
+import { validateMethodPlan } from '../cfg/plan-validate.js'
 import { validateMethodDraft } from '../cfg/validate.js'
-import { CfgMethodDraft, DiscoveredMethod } from '../cfg/schema.js'
+import { CfgMethodDraft, DiscoveredMethod, MethodPlan } from '../cfg/schema.js'
 
 type RegressionMethodInput = Omit<DiscoveredMethod, 'startLine' | 'endLine'>
 
@@ -10,6 +12,13 @@ interface CfgRegressionCase {
     method: RegressionMethodInput
     draft: CfgMethodDraft
     assertNormalized: (draft: CfgMethodDraft) => void
+}
+
+interface PlanRegressionCase {
+    name: string
+    method: RegressionMethodInput
+    plan: MethodPlan
+    assertCompiled: (draft: CfgMethodDraft) => void
 }
 
 function materializeRegressionMethod(method: RegressionMethodInput): DiscoveredMethod {
@@ -28,6 +37,18 @@ function runRegressionCase(testCase: CfgRegressionCase): void {
 
     assert.equal(validation.valid, true, `${testCase.name} should validate. Errors: ${validation.errors.join(' | ')}`)
     testCase.assertNormalized(normalized)
+    console.log(`PASS ${testCase.name}`)
+}
+
+function runPlanRegressionCase(testCase: PlanRegressionCase): void {
+    const method = materializeRegressionMethod(testCase.method)
+    const planValidation = validateMethodPlan(method, testCase.plan)
+    assert.equal(planValidation.valid, true, `${testCase.name} should have a valid MethodPlan. Errors: ${planValidation.errors.join(' | ')}`)
+
+    const draft = compileMethodPlan(method, testCase.plan)
+    const cfgValidation = validateMethodDraft(draft, method.source)
+    assert.equal(cfgValidation.valid, true, `${testCase.name} should compile into a valid CFG. Errors: ${cfgValidation.errors.join(' | ')}`)
+    testCase.assertCompiled(draft)
     console.log(`PASS ${testCase.name}`)
 }
 
@@ -543,6 +564,532 @@ const regressionCases: CfgRegressionCase[] = [
             assert.equal(loopBody.next, 'loop_increment')
             assert.equal(loopIncrement.next, 'loop_condition')
         }
+    },
+    {
+        name: 'orphan inner conditional is spliced into loop flow',
+        method: {
+            name: 'method005',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            source: [
+                'int method005(int x, int y) {',
+                '    int loopCounter = 0;',
+                '    for (int i = 0; i < y; i += x) {',
+                '        loopCounter++;',
+                '        if (loopCounter % 5) {',
+                '            loopCounter += 2;',
+                '        }',
+                '    }',
+                '    return loopCounter;',
+                '}'
+            ].join('\n')
+        },
+        draft: {
+            name: 'method005',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            nodes: [
+                {
+                    id: 'entry',
+                    type: 'entry',
+                    next: 'init_block'
+                },
+                {
+                    id: 'init_block',
+                    type: 'block',
+                    statements: ['int loopCounter = 0;']
+                },
+                {
+                    id: 'loop_node',
+                    type: 'loop',
+                    predicates: [
+                        {
+                            id: 'loop_cond',
+                            statement: 'i < y',
+                            onTrue: 'loop_body_block',
+                            onFalse: 'return_block'
+                        }
+                    ],
+                    iteratorStart: 'int i = 0;',
+                    iteratorUpdate: 'i += x'
+                },
+                {
+                    id: 'loop_body_block',
+                    type: 'block',
+                    statements: ['loopCounter++;'],
+                    next: 'loop_node'
+                },
+                {
+                    id: 'if_conditional',
+                    type: 'conditional',
+                    predicates: [
+                        {
+                            id: 'if_cond',
+                            statement: 'loopCounter % 5',
+                            onTrue: 'if_true_block',
+                            onFalse: 'after_if_block'
+                        }
+                    ]
+                },
+                {
+                    id: 'if_true_block',
+                    type: 'block',
+                    statements: ['loopCounter += 2;']
+                },
+                {
+                    id: 'after_if_block',
+                    type: 'block',
+                    statements: []
+                },
+                {
+                    id: 'return_block',
+                    type: 'block',
+                    statements: ['_return_value = loopCounter;'],
+                    next: 'exit'
+                },
+                {
+                    id: 'exit',
+                    type: 'exit',
+                    returnValues: [{ name: '_return_value', type: 'int' }],
+                    next: null
+                }
+            ]
+        },
+        assertNormalized: (draft) => {
+            const initBlock = draft.nodes.find((node) => node.id === 'init_block')
+            const loopBodyBlock = draft.nodes.find((node) => node.id === 'loop_body_block')
+            const ifTrueBlock = draft.nodes.find((node) => node.id === 'if_true_block')
+            const afterIfBlock = draft.nodes.find((node) => node.id === 'after_if_block')
+            assert.ok(initBlock?.type === 'block')
+            assert.ok(loopBodyBlock?.type === 'block')
+            assert.ok(ifTrueBlock?.type === 'block')
+            assert.ok(afterIfBlock?.type === 'block')
+            assert.equal(initBlock.next, 'loop_node')
+            assert.equal(loopBodyBlock.next, 'if_conditional')
+            assert.equal(ifTrueBlock.next, 'after_if_block')
+            assert.equal(afterIfBlock.next, 'loop_node')
+        }
+    },
+    {
+        name: 'nested loop branches reconnect to the inner loop update',
+        method: {
+            name: 'method007',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            source: [
+                'int method007(int x, int y) {',
+                '    int loopCounter = 0;',
+                '    for (int i = 0; i < y; i ++) {',
+                '        for (int j = x; j >= 0; j --) {',
+                '            if (j == i) {',
+                '                loopCounter += 2;',
+                '            } else {',
+                '                loopCounter += 3;',
+                '            }',
+                '        }',
+                '    }',
+                '    return loopCounter;',
+                '}'
+            ].join('\n')
+        },
+        draft: {
+            name: 'method007',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            nodes: [
+                {
+                    id: 'entry',
+                    type: 'entry',
+                    next: 'init_loop_counter'
+                },
+                {
+                    id: 'init_loop_counter',
+                    type: 'block',
+                    statements: ['int loopCounter = 0;'],
+                    next: 'outer_loop'
+                },
+                {
+                    id: 'outer_loop',
+                    type: 'loop',
+                    predicates: [
+                        {
+                            id: 'p_outer_cond',
+                            statement: 'i < y',
+                            onTrue: 'inner_loop',
+                            onFalse: 'return_block'
+                        }
+                    ],
+                    iteratorStart: 'int i = 0;',
+                    iteratorUpdate: 'i ++'
+                },
+                {
+                    id: 'inner_loop',
+                    type: 'loop',
+                    predicates: [
+                        {
+                            id: 'p_inner_cond',
+                            statement: 'j >= 0',
+                            onTrue: 'if_j_eq_i',
+                            onFalse: 'outer_loop_update'
+                        }
+                    ],
+                    iteratorStart: 'int j = x;',
+                    iteratorUpdate: 'j --'
+                },
+                {
+                    id: 'if_j_eq_i',
+                    type: 'conditional',
+                    predicates: [
+                        {
+                            id: 'p_j_eq_i',
+                            statement: 'j == i',
+                            onTrue: 'then_block',
+                            onFalse: 'else_block'
+                        }
+                    ]
+                },
+                {
+                    id: 'then_block',
+                    type: 'block',
+                    statements: ['loopCounter += 2;']
+                },
+                {
+                    id: 'else_block',
+                    type: 'block',
+                    statements: ['loopCounter += 3;']
+                },
+                {
+                    id: 'inner_loop_update',
+                    type: 'block',
+                    statements: ['j --;'],
+                    next: 'outer_loop'
+                },
+                {
+                    id: 'outer_loop_update',
+                    type: 'block',
+                    statements: ['i ++;']
+                },
+                {
+                    id: 'return_block',
+                    type: 'block',
+                    statements: ['_return_value = loopCounter;'],
+                    next: 'exit'
+                },
+                {
+                    id: 'exit',
+                    type: 'exit',
+                    returnValues: [{ name: '_return_value', type: 'int' }],
+                    next: null
+                }
+            ]
+        },
+        assertNormalized: (draft) => {
+            const thenBlock = draft.nodes.find((node) => node.id === 'then_block')
+            const elseBlock = draft.nodes.find((node) => node.id === 'else_block')
+            const innerLoopUpdate = draft.nodes.find((node) => node.id === 'inner_loop_update')
+            const outerLoopUpdate = draft.nodes.find((node) => node.id === 'outer_loop_update')
+            assert.ok(thenBlock?.type === 'block')
+            assert.ok(elseBlock?.type === 'block')
+            assert.ok(innerLoopUpdate?.type === 'block')
+            assert.ok(outerLoopUpdate?.type === 'block')
+            assert.equal(thenBlock.next, 'inner_loop_update')
+            assert.equal(elseBlock.next, 'inner_loop_update')
+            assert.equal(innerLoopUpdate.next, 'inner_loop')
+            assert.equal(outerLoopUpdate.next, 'outer_loop')
+        }
+    },
+    {
+        name: 'constant-true loop break conditional is spliced into the loop body',
+        method: {
+            name: 'method009',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            source: [
+                'int method009(int x, int y) {',
+                '    int loopCounter = 0;',
+                '    while (true) {',
+                '        loopCounter++;',
+                '        if (loopCounter + x == y) {',
+                '            break;',
+                '        }',
+                '    }',
+                '    return loopCounter;',
+                '}'
+            ].join('\n')
+        },
+        draft: {
+            name: 'method009',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            nodes: [
+                {
+                    id: 'entry',
+                    type: 'entry',
+                    next: 'init_loop_counter'
+                },
+                {
+                    id: 'init_loop_counter',
+                    type: 'block',
+                    statements: ['int loopCounter = 0;'],
+                    next: 'while_true_loop'
+                },
+                {
+                    id: 'while_true_loop',
+                    type: 'loop',
+                    next: 'loop_increment',
+                    predicates: []
+                },
+                {
+                    id: 'loop_increment',
+                    type: 'block',
+                    statements: ['loopCounter++;'],
+                    next: 'while_true_loop'
+                },
+                {
+                    id: 'check_break_condition',
+                    type: 'conditional',
+                    predicates: [
+                        {
+                            id: 'p1',
+                            statement: 'loopCounter + x == y',
+                            onTrue: 'break_from_loop',
+                            onFalse: 'loop_increment'
+                        }
+                    ]
+                },
+                {
+                    id: 'break_from_loop',
+                    type: 'jump',
+                    next: 'assign_return_value',
+                    jumpKind: 'break'
+                },
+                {
+                    id: 'assign_return_value',
+                    type: 'block',
+                    statements: ['_return_value = loopCounter;'],
+                    next: 'exit'
+                },
+                {
+                    id: 'exit',
+                    type: 'exit',
+                    returnValues: [{ name: '_return_value', type: 'int' }],
+                    next: null
+                }
+            ]
+        },
+        assertNormalized: (draft) => {
+            const loopIncrement = draft.nodes.find((node) => node.id === 'loop_increment')
+            const whileTrueLoop = draft.nodes.find((node) => node.id === 'while_true_loop')
+            const breakCondition = draft.nodes.find((node) => node.id === 'check_break_condition')
+            const breakFromLoop = draft.nodes.find((node) => node.id === 'break_from_loop')
+            assert.ok(loopIncrement?.type === 'block')
+            assert.ok(whileTrueLoop?.type === 'loop')
+            assert.ok(breakCondition?.type === 'conditional')
+            assert.ok(breakFromLoop?.type === 'jump')
+            assert.equal(whileTrueLoop.next, undefined)
+            assert.equal(whileTrueLoop.predicates?.[0]?.statement, 'true')
+            assert.equal(whileTrueLoop.predicates?.[0]?.onTrue, 'loop_increment')
+            assert.equal(loopIncrement.next, 'check_break_condition')
+            assert.equal(breakCondition.predicates?.[0]?.onFalse, 'while_true_loop')
+            assert.equal(breakFromLoop.next, 'assign_return_value')
+        }
+    }
+]
+
+const planRegressionCases: PlanRegressionCase[] = [
+    {
+        name: 'plan compiler handles nested loops with an inner conditional',
+        method: {
+            name: 'method007',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            source: [
+                'int method007(int x, int y) {',
+                '    int loopCounter = 0;',
+                '    for (int i = 0; i < y; i ++) {',
+                '        for (int j = x; j >= 0; j --) {',
+                '            if (j == i) {',
+                '                loopCounter += 2;',
+                '            } else {',
+                '                loopCounter += 3;',
+                '            }',
+                '        }',
+                '    }',
+                '    return loopCounter;',
+                '}'
+            ].join('\n')
+        },
+        plan: {
+            name: 'method007',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            body: [
+                {
+                    kind: 'block',
+                    statements: ['int loopCounter = 0;']
+                },
+                {
+                    kind: 'loop',
+                    loopType: 'for',
+                    condition: 'i < y',
+                    iteratorStart: 'int i = 0;',
+                    iteratorUpdate: 'i ++',
+                    body: [
+                        {
+                            kind: 'loop',
+                            loopType: 'for',
+                            condition: 'j >= 0',
+                            iteratorStart: 'int j = x;',
+                            iteratorUpdate: 'j --',
+                            body: [
+                                {
+                                    kind: 'if',
+                                    condition: 'j == i',
+                                    then: [
+                                        {
+                                            kind: 'block',
+                                            statements: ['loopCounter += 2;']
+                                        }
+                                    ],
+                                    else: [
+                                        {
+                                            kind: 'block',
+                                            statements: ['loopCounter += 3;']
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    kind: 'return',
+                    expression: 'loopCounter'
+                }
+            ]
+        },
+        assertCompiled: (draft) => {
+            const outerLoop = draft.nodes.find((node) => node.type === 'loop' && node.iteratorStart === 'int i = 0;')
+            const innerLoop = draft.nodes.find((node) => node.type === 'loop' && node.iteratorStart === 'int j = x;')
+            const thenBlock = draft.nodes.find((node) => node.type === 'block' && node.statements?.includes('loopCounter += 2;'))
+            const elseBlock = draft.nodes.find((node) => node.type === 'block' && node.statements?.includes('loopCounter += 3;'))
+            const innerUpdate = draft.nodes.find((node) => node.type === 'block' && node.statements?.includes('j --'))
+            const outerUpdate = draft.nodes.find((node) => node.type === 'block' && node.statements?.includes('i ++'))
+
+            assert.ok(outerLoop?.type === 'loop')
+            assert.ok(innerLoop?.type === 'loop')
+            assert.ok(thenBlock?.type === 'block')
+            assert.ok(elseBlock?.type === 'block')
+            assert.ok(innerUpdate?.type === 'block')
+            assert.ok(outerUpdate?.type === 'block')
+            assert.equal(thenBlock.next, innerUpdate.id)
+            assert.equal(elseBlock.next, innerUpdate.id)
+            assert.equal(innerUpdate.next, innerLoop.id)
+            assert.equal(outerUpdate.next, outerLoop.id)
+        }
+    },
+    {
+        name: 'plan compiler handles while-true loop with break',
+        method: {
+            name: 'method009',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            source: [
+                'int method009(int x, int y) {',
+                '    int loopCounter = 0;',
+                '    while (true) {',
+                '        loopCounter++;',
+                '        if (loopCounter + x == y) {',
+                '            break;',
+                '        }',
+                '    }',
+                '    return loopCounter;',
+                '}'
+            ].join('\n')
+        },
+        plan: {
+            name: 'method009',
+            returnType: 'int',
+            parameters: [
+                { name: 'x', type: 'int' },
+                { name: 'y', type: 'int' }
+            ],
+            body: [
+                {
+                    kind: 'block',
+                    statements: ['int loopCounter = 0;']
+                },
+                {
+                    kind: 'loop',
+                    loopType: 'while',
+                    condition: 'true',
+                    iteratorStart: null,
+                    iteratorUpdate: null,
+                    body: [
+                        {
+                            kind: 'block',
+                            statements: ['loopCounter++;']
+                        },
+                        {
+                            kind: 'if',
+                            condition: 'loopCounter + x == y',
+                            then: [
+                                {
+                                    kind: 'break'
+                                }
+                            ],
+                            else: []
+                        }
+                    ]
+                },
+                {
+                    kind: 'return',
+                    expression: 'loopCounter'
+                }
+            ]
+        },
+        assertCompiled: (draft) => {
+            const whileLoop = draft.nodes.find((node) => node.type === 'loop' && node.predicates?.[0]?.statement === 'true')
+            const incrementBlock = draft.nodes.find((node) => node.type === 'block' && node.statements?.includes('loopCounter++;'))
+            const breakConditional = draft.nodes.find((node) => node.type === 'conditional' && node.predicates?.[0]?.statement === 'loopCounter + x == y')
+            const breakJump = draft.nodes.find((node) => node.type === 'jump' && node.jumpKind === 'break')
+
+            assert.ok(whileLoop?.type === 'loop')
+            assert.ok(incrementBlock?.type === 'block')
+            assert.ok(breakConditional?.type === 'conditional')
+            assert.ok(breakJump?.type === 'jump')
+            assert.equal(whileLoop.predicates?.[0]?.onTrue, incrementBlock.id)
+            assert.equal(incrementBlock.next, breakConditional.id)
+            assert.equal(breakConditional.predicates?.[0]?.onFalse, whileLoop.id)
+            assert.notEqual(breakJump.next, whileLoop.id)
+        }
     }
 ]
 
@@ -550,4 +1097,101 @@ for (const testCase of regressionCases) {
     runRegressionCase(testCase)
 }
 
-console.log(`PASS ${regressionCases.length} cfg regression cases`)
+for (const testCase of planRegressionCases) {
+    runPlanRegressionCase(testCase)
+}
+
+{
+    const source = 'def basic():\n    x = 1\n    print(x)\n'
+    const hallucinatedDraft: CfgMethodDraft = {
+        name: 'basic',
+        returnType: 'None',
+        parameters: [],
+        nodes: [
+            {
+                id: 'entry',
+                type: 'entry',
+                arguments: [],
+                next: 'body'
+            },
+            {
+                id: 'body',
+                type: 'block',
+                statements: ['x = 1', 'print(x) extra unrelated prose'],
+                next: 'exit'
+            },
+            {
+                id: 'exit',
+                type: 'exit',
+                returnValues: [],
+                next: null
+            }
+        ]
+    }
+    const validation = validateMethodDraft(hallucinatedDraft, source)
+    assert.equal(validation.valid, false)
+    assert.ok(validation.errors.some((error) => error.includes('does not appear in the source method')))
+    console.log('PASS source-aware validation rejects hallucinated statements')
+}
+
+{
+    const method = materializeRegressionMethod({
+        name: 'missing_return_expression',
+        returnType: 'int',
+        parameters: [],
+        source: 'int missing_return_expression() { return 1; }'
+    })
+    const plan: MethodPlan = {
+        name: 'missing_return_expression',
+        returnType: 'int',
+        parameters: [],
+        body: [
+            {
+                kind: 'return',
+                expression: null
+            }
+        ]
+    }
+    const validation = validateMethodPlan(method, plan)
+    assert.equal(validation.valid, false)
+    assert.ok(validation.errors.some((error) => error.includes('must include an expression')))
+    console.log('PASS plan validation rejects missing non-void return expressions')
+}
+
+{
+    const method = materializeRegressionMethod({
+        name: 'missing_condition',
+        returnType: 'int',
+        parameters: [],
+        source: 'int missing_condition(int x) { if (x > 0) { return 1; } return 0; }'
+    })
+    const plan: MethodPlan = {
+        name: 'missing_condition',
+        returnType: 'int',
+        parameters: [],
+        body: [
+            {
+                kind: 'if',
+                condition: '',
+                then: [
+                    {
+                        kind: 'return',
+                        expression: '1'
+                    }
+                ],
+                else: [
+                    {
+                        kind: 'return',
+                        expression: '0'
+                    }
+                ]
+            }
+        ]
+    }
+    const validation = validateMethodPlan(method, plan)
+    assert.equal(validation.valid, false)
+    assert.ok(validation.errors.some((error) => error.includes('Condition in body[0] must not be blank.')))
+    console.log('PASS plan validation rejects missing conditions')
+}
+
+console.log(`PASS ${regressionCases.length + planRegressionCases.length + 3} cfg regression cases`)

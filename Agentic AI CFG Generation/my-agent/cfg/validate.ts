@@ -14,19 +14,69 @@ function isBlank(value: string | null | undefined): boolean {
     return value == null || value.trim().length === 0
 }
 
+function isDefined<T>(value: T | null | undefined): value is T {
+    return value !== undefined && value !== null
+}
+
 function isNodeTerminatorStatement(statement: string): boolean {
     return /^\s*(return|break|continue)\b/.test(statement)
+}
+
+function normalizeComparableText(value: string): string {
+    return value
+        .replace(/\r\n?/g, '\n')
+        .replace(/\s+/g, ' ')
+        .trim()
+}
+
+function stripTrailingSemicolon(value: string): string {
+    return value.replace(/;\s*$/, '').trim()
+}
+
+function containsSourceSnippet(source: string, snippet: string): boolean {
+    const normalizedSource = normalizeComparableText(source)
+    const normalizedSnippet = normalizeComparableText(snippet)
+    const semicolonAgnosticSnippet = stripTrailingSemicolon(normalizedSnippet)
+
+    return normalizedSource.includes(normalizedSnippet)
+        || (semicolonAgnosticSnippet.length > 0 && normalizedSource.includes(semicolonAgnosticSnippet))
+}
+
+function isSyntheticCfgStatement(statement: string): boolean {
+    const trimmed = statement.trim()
+    return /^_return_value\s*=/.test(trimmed)
 }
 
 function unique<T>(values: T[]): T[] {
     return [...new Set(values)]
 }
 
-export function validateMethodDraft(method: CfgMethodDraft): ValidationResult {
+export function validateMethodDraft(method: CfgMethodDraft, methodSource?: string): ValidationResult {
     const errors: string[] = []
     const nodeMap = new Map<string, CfgNodeDraft>()
     const predicateMap = new Map<string, CfgPredicate>()
     const predicateOwner = new Map<string, CfgNodeDraft>()
+    const normalizedMethodSource = methodSource ? normalizeComparableText(methodSource) : null
+
+    const requireSourceBackedText = (label: string, value: string): void => {
+        const trimmed = value.trim()
+        if (trimmed.length === 0) {
+            errors.push(`${label} must not be blank.`)
+            return
+        }
+
+        if (!normalizedMethodSource) {
+            return
+        }
+
+        if (isSyntheticCfgStatement(trimmed)) {
+            return
+        }
+
+        if (!containsSourceSnippet(normalizedMethodSource, trimmed)) {
+            errors.push(`${label} does not appear in the source method: '${trimmed}'.`)
+        }
+    }
 
     for (const node of method.nodes) {
         if (nodeMap.has(node.id)) {
@@ -66,6 +116,9 @@ export function validateMethodDraft(method: CfgMethodDraft): ValidationResult {
     for (const node of method.nodes) {
         switch (node.type) {
             case 'entry':
+                if (isDefined(node.statements) || isDefined(node.predicates) || isDefined(node.iteratorStart) || isDefined(node.iteratorUpdate) || isDefined(node.returnValues) || isDefined(node.jumpKind)) {
+                    errors.push(`Entry node '${node.id}' contains fields that are not allowed for entry nodes.`)
+                }
                 if (node.arguments == null) {
                     errors.push(`Entry node '${node.id}' must declare an arguments array.`)
                 }
@@ -74,6 +127,9 @@ export function validateMethodDraft(method: CfgMethodDraft): ValidationResult {
                 }
                 break
             case 'block':
+                if (isDefined(node.arguments) || isDefined(node.predicates) || isDefined(node.iteratorStart) || isDefined(node.iteratorUpdate) || isDefined(node.returnValues) || isDefined(node.jumpKind)) {
+                    errors.push(`Block node '${node.id}' contains fields that are not allowed for block nodes.`)
+                }
                 if (!node.statements) {
                     errors.push(`Block node '${node.id}' must declare a statements array.`)
                     break
@@ -82,27 +138,46 @@ export function validateMethodDraft(method: CfgMethodDraft): ValidationResult {
                     if (isNodeTerminatorStatement(statement)) {
                         errors.push(`Block node '${node.id}' contains a control transfer statement '${statement}'. Use exit or jump nodes instead.`)
                     }
+                    requireSourceBackedText(`Statement in block node '${node.id}'`, statement)
                 }
                 if (isBlank(node.next)) {
                     errors.push(`Block node '${node.id}' must point to a next node.`)
                 }
                 break
             case 'jump':
+                if (isDefined(node.arguments) || isDefined(node.statements) || isDefined(node.predicates) || isDefined(node.iteratorStart) || isDefined(node.iteratorUpdate) || isDefined(node.returnValues)) {
+                    errors.push(`Jump node '${node.id}' contains fields that are not allowed for jump nodes.`)
+                }
                 if (isBlank(node.next)) {
                     errors.push(`Jump node '${node.id}' must point to a next node.`)
                 }
                 break
             case 'conditional':
+                if (isDefined(node.arguments) || isDefined(node.statements) || isDefined(node.iteratorStart) || isDefined(node.iteratorUpdate) || isDefined(node.returnValues) || isDefined(node.jumpKind)) {
+                    errors.push(`Conditional node '${node.id}' contains fields that are not allowed for conditional nodes.`)
+                }
                 if (node.next != null) {
                     errors.push(`Conditional node '${node.id}' must not declare a next field.`)
                 }
                 break
             case 'loop':
+                if (isDefined(node.arguments) || isDefined(node.statements) || isDefined(node.returnValues) || isDefined(node.jumpKind)) {
+                    errors.push(`Loop node '${node.id}' contains fields that are not allowed for loop nodes.`)
+                }
+                if (!isBlank(node.iteratorStart)) {
+                    requireSourceBackedText(`Loop iteratorStart in node '${node.id}'`, node.iteratorStart!)
+                }
+                if (!isBlank(node.iteratorUpdate)) {
+                    requireSourceBackedText(`Loop iteratorUpdate in node '${node.id}'`, node.iteratorUpdate!)
+                }
                 if (node.next != null) {
                     errors.push(`Loop node '${node.id}' must not declare a next field.`)
                 }
                 break
             case 'exit': {
+                if (isDefined(node.arguments) || isDefined(node.statements) || isDefined(node.predicates) || isDefined(node.iteratorStart) || isDefined(node.iteratorUpdate) || isDefined(node.jumpKind)) {
+                    errors.push(`Exit node '${node.id}' contains fields that are not allowed for exit nodes.`)
+                }
                 if (node.next !== null && node.next !== undefined) {
                     errors.push(`Exit node '${node.id}' must have next: null.`)
                 }
@@ -131,6 +206,8 @@ export function validateMethodDraft(method: CfgMethodDraft): ValidationResult {
             const localPredicateIds = new Set(predicates.map((predicate) => predicate.id))
 
             for (const predicate of predicates) {
+                requireSourceBackedText(`Predicate '${predicate.id}' in node '${node.id}'`, predicate.statement)
+
                 if (predicate.onTrue == null && predicate.onFalse == null) {
                     errors.push(`Predicate '${predicate.id}' in node '${node.id}' must have at least one outgoing edge.`)
                 }

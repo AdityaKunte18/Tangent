@@ -11,7 +11,8 @@ export interface File {
 
 export interface Export {
     name: string,
-    data: string
+    data: string,
+    suffix?: string
 }
 
 const validExtentions = ['.py', '.cpp', '.java']
@@ -102,9 +103,20 @@ export function readFileAtPath(filepath: string): File {
 }
 
 export function exportfile(export_data: Export): void {
-    const {name, data} = export_data
-    const filename = `${name}.yaml`
+    const {name, data, suffix} = export_data
+    const filename = `${name}${suffix ?? '.yaml'}`
     const __path = path.join(outputRoot, filename)
 
     fs.writeFileSync(__path, data, 'utf-8')
+}
+
+export function deleteExportfile(name: string, suffix = '.yaml'): void {
+    const filename = `${name}${suffix}`
+    const __path = path.join(outputRoot, filename)
+
+    if (!fs.existsSync(__path)) {
+        return
+    }
+
+    fs.unlinkSync(__path)
 }

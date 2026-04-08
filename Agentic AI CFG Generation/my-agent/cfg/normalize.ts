@@ -37,6 +37,21 @@ function nextSyntheticNodeId(nodes: CfgNodeDraft[], baseId: string): string {
     return candidate
 }
 
+function nextSyntheticPredicateId(nodes: CfgNodeDraft[], baseId: string): string {
+    let counter = 0
+    let candidate = `${baseId}_predicate`
+    const existingIds = new Set(
+        nodes.flatMap((node) => (node.predicates ?? []).map((predicate) => predicate.id))
+    )
+
+    while (existingIds.has(candidate)) {
+        counter += 1
+        candidate = `${baseId}_predicate_${counter}`
+    }
+
+    return candidate
+}
+
 function buildReturnAssignment(expression: string, hadSemicolon: boolean): string {
     const suffix = hadSemicolon ? ';' : ''
     return `_return_value = ${expression}${suffix}`
@@ -82,6 +97,57 @@ function collectPredicateTargetNodeIds(nodes: CfgNodeDraft[]): Set<string> {
     return targetNodeIds
 }
 
+function buildPredicateMap(nodes: CfgNodeDraft[]): Map<string, { predicate: NonNullable<CfgNodeDraft['predicates']>[number], owner: CfgNodeDraft }> {
+    const predicateMap = new Map<string, { predicate: NonNullable<CfgNodeDraft['predicates']>[number], owner: CfgNodeDraft }>()
+
+    for (const node of nodes) {
+        for (const predicate of node.predicates ?? []) {
+            predicateMap.set(predicate.id, {
+                predicate,
+                owner: node
+            })
+        }
+    }
+
+    return predicateMap
+}
+
+function buildGraphIndex(nodes: CfgNodeDraft[]): {
+    nodeMap: Map<string, CfgNodeDraft>
+    referencedNodeIds: Set<string>
+    predicateTargetIds: Set<string>
+    inboundCounts: Map<string, number>
+} {
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]))
+    const referencedNodeIds = collectReferencedNodeIds(nodes)
+    const predicateTargetIds = collectPredicateTargetNodeIds(nodes)
+    const inboundCounts = new Map<string, number>()
+
+    const addInbound = (targetId: string | null | undefined): void => {
+        if (targetId == null || !nodeMap.has(targetId)) {
+            return
+        }
+
+        inboundCounts.set(targetId, (inboundCounts.get(targetId) ?? 0) + 1)
+    }
+
+    for (const node of nodes) {
+        addInbound(node.next)
+
+        for (const predicate of node.predicates ?? []) {
+            addInbound(predicate.onTrue)
+            addInbound(predicate.onFalse)
+        }
+    }
+
+    return {
+        nodeMap,
+        referencedNodeIds,
+        predicateTargetIds,
+        inboundCounts
+    }
+}
+
 function isSyntheticReturnBlock(node: CfgNodeDraft): boolean {
     return node.type === 'block' && (node.statements ?? []).some((statement) => statement.includes('_return_value'))
 }
@@ -107,11 +173,196 @@ function isEligibleRepairBlock(node: CfgNodeDraft): boolean {
     return node.type === 'block' && node.next == null && !isSyntheticReturnBlock(node)
 }
 
+function extractVariableName(expression: string | null | undefined): string | null {
+    if (!expression) {
+        return null
+    }
+
+    const trimmed = expression.trim().replace(/;$/, '')
+    const updateMatch = trimmed.match(/([A-Za-z_]\w*)\s*(?:\+\+|--|\+=|-=)/)
+    if (updateMatch) {
+        return updateMatch[1]
+    }
+
+    const assignmentMatch = trimmed.match(/([A-Za-z_]\w*)\s*=\s*[^=]/)
+    if (assignmentMatch) {
+        return assignmentMatch[1]
+    }
+
+    return null
+}
+
+function inferLoopVariable(loopNode: CfgNodeDraft): string | null {
+    const directVariable = extractVariableName(loopNode.iteratorUpdate) ?? extractVariableName(loopNode.iteratorStart)
+    if (directVariable) {
+        return directVariable
+    }
+
+    const predicateStatement = loopNode.predicates?.[0]?.statement?.trim()
+    if (!predicateStatement) {
+        return null
+    }
+
+    const predicateMatch = predicateStatement.match(/^([A-Za-z_]\w*)\s*(?:<|<=|>|>=|==|!=)/)
+    return predicateMatch?.[1] ?? null
+}
+
+function findLoopUpdateBlock(
+    nodes: CfgNodeDraft[],
+    loopNode: CfgNodeDraft,
+    loopIndex: number
+): CfgNodeDraft | undefined {
+    const loopVariable = inferLoopVariable(loopNode)
+    const candidates = nodes
+        .slice(loopIndex + 1)
+        .filter((node) => node.type === 'block' && isLikelyLoopUpdateBlock(node))
+
+    if (loopVariable) {
+        return candidates.find((node) => {
+            const statement = node.statements?.[0]
+            return extractVariableName(statement) === loopVariable
+        })
+    }
+
+    return candidates[0]
+}
+
+function collectLoopLeafBlocks(
+    loopNode: CfgNodeDraft,
+    nodeMap: Map<string, CfgNodeDraft>,
+    predicateMap: Map<string, { predicate: NonNullable<CfgNodeDraft['predicates']>[number], owner: CfgNodeDraft }>
+): CfgNodeDraft[] {
+    const leaves: CfgNodeDraft[] = []
+    const visitedRefs = new Set<string>()
+    const queue: string[] = (loopNode.predicates ?? [])
+        .map((predicate) => predicate.onTrue)
+        .filter((target): target is string => target != null)
+
+    while (queue.length > 0) {
+        const ref = queue.shift()
+        if (!ref || visitedRefs.has(ref)) {
+            continue
+        }
+
+        visitedRefs.add(ref)
+
+        const targetNode = nodeMap.get(ref)
+        if (targetNode) {
+            if (targetNode.id === loopNode.id || targetNode.type === 'exit') {
+                continue
+            }
+
+            if (targetNode.type === 'loop' && targetNode.id !== loopNode.id) {
+                continue
+            }
+
+            if (targetNode.type === 'block') {
+                if (isSyntheticReturnBlock(targetNode)) {
+                    continue
+                }
+
+                if (targetNode.next == null || targetNode.next === loopNode.id) {
+                    leaves.push(targetNode)
+                    continue
+                }
+
+                queue.push(targetNode.next)
+                continue
+            }
+
+            if (targetNode.type === 'conditional') {
+                for (const predicate of targetNode.predicates ?? []) {
+                    if (predicate.onTrue) {
+                        queue.push(predicate.onTrue)
+                    }
+                    if (predicate.onFalse) {
+                        queue.push(predicate.onFalse)
+                    }
+                }
+                continue
+            }
+
+            if (targetNode.type === 'jump' && targetNode.next && targetNode.next !== loopNode.id) {
+                queue.push(targetNode.next)
+            }
+
+            continue
+        }
+
+        const predicateEntry = predicateMap.get(ref)
+        if (!predicateEntry) {
+            continue
+        }
+
+        for (const target of [predicateEntry.predicate.onTrue, predicateEntry.predicate.onFalse]) {
+            if (target && target !== loopNode.id) {
+                queue.push(target)
+            }
+        }
+    }
+
+    return leaves
+}
+
+function isConstantTruePredicate(statement: string | null | undefined): boolean {
+    if (!statement) {
+        return false
+    }
+
+    const normalized = statement.trim().replace(/[();]/g, '').toLowerCase()
+    return normalized === 'true' || normalized === '1'
+}
+
+function isBreakJumpNode(node: CfgNodeDraft | undefined): boolean {
+    if (!node || node.type !== 'jump') {
+        return false
+    }
+
+    return node.jumpKind === 'break' || /\bbreak\b/i.test(node.id)
+}
+
+function findOrphanBreakConditional(
+    nodes: CfgNodeDraft[],
+    loopNode: CfgNodeDraft,
+    loopIndex: number,
+    nodeMap: Map<string, CfgNodeDraft>,
+    inboundCounts: Map<string, number>
+): CfgNodeDraft | undefined {
+    const loopPredicate = loopNode.predicates?.[0]
+    if (!isConstantTruePredicate(loopPredicate?.statement)) {
+        return undefined
+    }
+
+    const loopBodyEntryId = loopPredicate?.onTrue ?? null
+
+    return nodes
+        .slice(loopIndex + 1)
+        .find((node) => {
+            if (node.type !== 'conditional' || (inboundCounts.get(node.id) ?? 0) !== 0) {
+                return false
+            }
+
+            return (node.predicates ?? []).some((predicate) => {
+                const targets = [predicate.onTrue, predicate.onFalse]
+                    .map((targetId) => targetId ? nodeMap.get(targetId) : undefined)
+
+                const hasBreakTarget = targets.some((targetNode) => isBreakJumpNode(targetNode))
+                const loopsBackToHeader = predicate.onTrue === loopNode.id
+                    || predicate.onFalse === loopNode.id
+                    || predicate.onTrue === loopBodyEntryId
+                    || predicate.onFalse === loopBodyEntryId
+
+                return hasBreakTarget && loopsBackToHeader
+            })
+        })
+}
+
 export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft): CfgMethodDraft {
     const normalized = structuredClone(draft)
     normalized.name = method.name
     normalized.returnType = method.returnType
     normalized.parameters = method.parameters
+    const legacyLoopNextTargets = new Map<string, string>()
 
     const exitNodes = normalized.nodes.filter((node) => node.type === 'exit')
     const exitNode = exitNodes.length === 1 ? exitNodes[0] : null
@@ -121,13 +372,61 @@ export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft):
 
     for (const node of normalized.nodes) {
         if (node.type === 'entry') {
+            delete node.statements
+            delete node.predicates
+            delete node.iteratorStart
+            delete node.iteratorUpdate
+            delete node.returnValues
+            delete node.jumpKind
             node.arguments = method.parameters
             continue
         }
 
         if (node.type === 'exit') {
+            delete node.arguments
+            delete node.statements
+            delete node.predicates
+            delete node.iteratorStart
+            delete node.iteratorUpdate
+            delete node.jumpKind
             node.next = null
             node.returnValues = voidMethod ? [] : (node.returnValues ?? [])
+            continue
+        }
+
+        if (node.type === 'conditional') {
+            delete node.arguments
+            delete node.statements
+            delete node.iteratorStart
+            delete node.iteratorUpdate
+            delete node.returnValues
+            delete node.jumpKind
+            delete node.next
+            continue
+        }
+
+        if (node.type === 'loop') {
+            const legacyNext = node.next
+            delete node.arguments
+            delete node.statements
+            delete node.returnValues
+            delete node.jumpKind
+            delete node.next
+
+            if ((node.predicates?.length ?? 0) === 0 && legacyNext) {
+                legacyLoopNextTargets.set(node.id, legacyNext)
+            }
+
+            continue
+        }
+
+        if (node.type === 'jump') {
+            delete node.arguments
+            delete node.statements
+            delete node.predicates
+            delete node.iteratorStart
+            delete node.iteratorUpdate
+            delete node.returnValues
             continue
         }
 
@@ -135,6 +434,12 @@ export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft):
             continue
         }
 
+        delete node.arguments
+        delete node.predicates
+        delete node.iteratorStart
+        delete node.iteratorUpdate
+        delete node.returnValues
+        delete node.jumpKind
         node.statements = node.statements ?? []
         const lastStatement = node.statements.length > 0
             ? node.statements[node.statements.length - 1]
@@ -167,41 +472,63 @@ export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft):
         }
     }
 
+    const firstSyntheticReturnTargetId = normalized.nodes.find((node) => isSyntheticReturnBlock(node))?.id
+
+    for (const node of normalized.nodes) {
+        if (node.type !== 'loop' || (node.predicates?.length ?? 0) > 0) {
+            continue
+        }
+
+        const legacyNextTarget = legacyLoopNextTargets.get(node.id)
+        if (!legacyNextTarget) {
+            continue
+        }
+
+        node.predicates = [
+            {
+                id: nextSyntheticPredicateId(normalized.nodes, node.id),
+                statement: 'true',
+                onTrue: legacyNextTarget,
+                onFalse: firstSyntheticReturnTargetId ?? exitNode?.id ?? null
+            }
+        ]
+    }
+
     if (exitNode && hasBranchingNodes) {
-        const nodeMap = new Map(normalized.nodes.map((node) => [node.id, node]))
-        const referencedNodeIds = collectReferencedNodeIds(normalized.nodes)
-        const predicateTargetIds = collectPredicateTargetNodeIds(normalized.nodes)
-        const branchRoots = normalized.nodes.filter((node) => {
-            return (node.type === 'conditional' || node.type === 'loop') && !referencedNodeIds.has(node.id)
-        })
+        let { nodeMap, referencedNodeIds, predicateTargetIds, inboundCounts } = buildGraphIndex(normalized.nodes)
+        const entryNode = normalized.nodes.find((node) => node.type === 'entry')
+        let linearTail: CfgNodeDraft | undefined = entryNode
+        const visitedLinearNodes = new Set<string>()
+        let currentNode = entryNode?.next ? nodeMap.get(entryNode.next) : undefined
 
-        if (branchRoots.length === 1) {
-            const rootNode = branchRoots[0]
-            const entryNode = normalized.nodes.find((node) => node.type === 'entry')
-            const visited = new Set<string>()
-            let currentNode = entryNode?.next ? nodeMap.get(entryNode.next) : undefined
-            let reconnectCandidate: CfgNodeDraft | undefined
+        while (currentNode && !visitedLinearNodes.has(currentNode.id)) {
+            visitedLinearNodes.add(currentNode.id)
 
-            while (currentNode && !visited.has(currentNode.id)) {
-                visited.add(currentNode.id)
-
-                if (currentNode.type !== 'block' && currentNode.type !== 'jump') {
-                    break
-                }
-
-                reconnectCandidate = currentNode
-
-                if (currentNode.next == null || currentNode.next === exitNode.id) {
-                    break
-                }
-
-                currentNode = nodeMap.get(currentNode.next)
+            if (currentNode.type !== 'block' && currentNode.type !== 'jump') {
+                break
             }
 
-            if (reconnectCandidate && reconnectCandidate.id !== rootNode.id && (reconnectCandidate.next == null || reconnectCandidate.next === exitNode.id)) {
-                reconnectCandidate.next = rootNode.id
+            linearTail = currentNode
+
+            if (currentNode.next == null || currentNode.next === exitNode.id) {
+                break
+            }
+
+            currentNode = nodeMap.get(currentNode.next)
+        }
+
+        if (linearTail && (linearTail.type === 'entry' || linearTail.type === 'block' || linearTail.type === 'jump') && linearTail.next == null) {
+            const tailIndex = normalized.nodes.findIndex((node) => node.id === linearTail?.id)
+            const nextControlNode = normalized.nodes
+                .slice(tailIndex + 1)
+                .find((node) => node.type === 'conditional' || node.type === 'loop')
+
+            if (nextControlNode && nextControlNode.id !== linearTail.id) {
+                linearTail.next = nextControlNode.id
             }
         }
+
+        ;({ nodeMap, referencedNodeIds, predicateTargetIds, inboundCounts } = buildGraphIndex(normalized.nodes))
 
         for (const loopNode of normalized.nodes.filter((node) => node.type === 'loop')) {
             for (const predicate of loopNode.predicates ?? []) {
@@ -222,6 +549,68 @@ export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft):
                 }
             }
         }
+
+        ;({ nodeMap, referencedNodeIds, predicateTargetIds, inboundCounts } = buildGraphIndex(normalized.nodes))
+
+        for (const loopNode of normalized.nodes.filter((node) => node.type === 'loop')) {
+            const loopIndex = normalized.nodes.findIndex((node) => node.id === loopNode.id)
+            const orphanConditional = normalized.nodes
+                .slice(loopIndex + 1)
+                .find((node) => node.type === 'conditional' && (inboundCounts.get(node.id) ?? 0) === 0)
+
+            if (!orphanConditional) {
+                continue
+            }
+
+            const loopBodyCandidates = (loopNode.predicates ?? [])
+                .map((predicate) => predicate.onTrue ? nodeMap.get(predicate.onTrue) : undefined)
+                .filter((candidate): candidate is CfgNodeDraft => candidate?.type === 'block')
+
+            const insertionPredecessor = [...loopBodyCandidates]
+                .reverse()
+                .find((node) => node.next == null || node.next === loopNode.id)
+
+            if (!insertionPredecessor) {
+                continue
+            }
+
+            insertionPredecessor.next = orphanConditional.id
+
+            const firstPredicate = orphanConditional.predicates?.[0]
+            const falseJoinTarget = firstPredicate?.onFalse ? nodeMap.get(firstPredicate.onFalse) : undefined
+            const joinBlock = falseJoinTarget?.type === 'block'
+                ? falseJoinTarget
+                : undefined
+            const loopFallbackTarget = loopNode.id
+
+            if (joinBlock && joinBlock.next == null) {
+                joinBlock.next = loopFallbackTarget
+            }
+
+            for (const predicate of orphanConditional.predicates ?? []) {
+                for (const targetId of [predicate.onTrue, predicate.onFalse]) {
+                    const targetNode = targetId ? nodeMap.get(targetId) : undefined
+
+                    if (!targetNode || targetNode.type !== 'block' || targetNode.next != null) {
+                        continue
+                    }
+
+                    if (isSyntheticReturnBlock(targetNode)) {
+                        targetNode.next = exitNode.id
+                        continue
+                    }
+
+                    if (joinBlock && targetNode.id !== joinBlock.id) {
+                        targetNode.next = joinBlock.id
+                        continue
+                    }
+
+                    targetNode.next = loopFallbackTarget
+                }
+            }
+        }
+
+        ;({ nodeMap, referencedNodeIds, predicateTargetIds, inboundCounts } = buildGraphIndex(normalized.nodes))
 
         const danglingBranchBlocks = normalized.nodes.filter((node) => {
             return node.type === 'block' && node.next == null && predicateTargetIds.has(node.id)
@@ -289,6 +678,78 @@ export function normalizeDraft(method: DiscoveredMethod, draft: CfgMethodDraft):
                         trueTarget.next = updateCandidate.id
                     }
                 }
+            }
+        }
+
+        ;({ nodeMap } = buildGraphIndex(normalized.nodes))
+        const predicateMap = buildPredicateMap(normalized.nodes)
+
+        const loopNodesInReverse = [...normalized.nodes]
+            .map((node, index) => ({ node, index }))
+            .filter((entry): entry is { node: CfgNodeDraft, index: number } => entry.node.type === 'loop')
+            .reverse()
+
+        for (const { node: loopNode, index: loopIndex } of loopNodesInReverse) {
+            const updateBlock = findLoopUpdateBlock(normalized.nodes, loopNode, loopIndex)
+            const continueTargetId = updateBlock?.id ?? loopNode.id
+
+            if (updateBlock) {
+                updateBlock.next = loopNode.id
+            }
+
+            const leafBlocks = collectLoopLeafBlocks(loopNode, nodeMap, predicateMap)
+            for (const leafBlock of leafBlocks) {
+                if (leafBlock.id === continueTargetId) {
+                    continue
+                }
+
+                if (leafBlock.next == null || (leafBlock.next === loopNode.id && continueTargetId !== loopNode.id)) {
+                    leafBlock.next = continueTargetId
+                }
+            }
+        }
+
+        ;({ nodeMap, inboundCounts } = buildGraphIndex(normalized.nodes))
+
+        for (const { node: loopNode, index: loopIndex } of loopNodesInReverse) {
+            const orphanBreakConditional = findOrphanBreakConditional(
+                normalized.nodes,
+                loopNode,
+                loopIndex,
+                nodeMap,
+                inboundCounts
+            )
+
+            if (!orphanBreakConditional) {
+                continue
+            }
+
+            const loopPredicate = loopNode.predicates?.[0]
+            const bodyEntry = loopPredicate?.onTrue ? nodeMap.get(loopPredicate.onTrue) : undefined
+
+            if (!bodyEntry || bodyEntry.type !== 'block') {
+                continue
+            }
+
+            for (const predicate of orphanBreakConditional.predicates ?? []) {
+                if (predicate.onTrue === bodyEntry.id) {
+                    predicate.onTrue = loopNode.id
+                }
+                if (predicate.onFalse === bodyEntry.id) {
+                    predicate.onFalse = loopNode.id
+                }
+            }
+
+            const leafBlocks = collectLoopLeafBlocks(loopNode, nodeMap, predicateMap)
+                .filter((node) => node.id !== orphanBreakConditional.id)
+            const spliceTargets = leafBlocks.filter((node) => node.next === loopNode.id)
+
+            if (spliceTargets.length === 0) {
+                spliceTargets.push(bodyEntry)
+            }
+
+            for (const block of spliceTargets) {
+                block.next = orphanBreakConditional.id
             }
         }
     }
