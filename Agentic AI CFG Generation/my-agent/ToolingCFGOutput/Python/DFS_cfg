@@ -1,0 +1,86 @@
+digraph clusterMyGraph {
+	graph [label=MyGraph]
+	1 [label="def dfsRec(adj, visited, s, res):...
+def dfs(adj):...
+def addEdge(adj, u, v):...
+if __name__ == '__main__':
+"]
+	17 [label="V = 5
+adj = []
+"]
+	19 [label="for i in range(V):
+"]
+	20 [label="adj.append([])
+"]
+	"20_calls" [label="adj.append" shape=box]
+	20 -> "20_calls" [label=calls style=dashed]
+	20 -> 19 [label=""]
+	19 -> 20 [label="range(V)"]
+	21 [label="addEdge(adj, 1, 2)
+addEdge(adj, 1, 0)
+addEdge(adj, 2, 0)
+addEdge(adj, 2, 3)
+addEdge(adj, 2, 4)
+res = dfs(adj)
+"]
+	"21_calls" [label="addEdge
+addEdge
+addEdge
+addEdge
+addEdge
+dfs" shape=box]
+	21 -> "21_calls" [label=calls style=dashed]
+	22 [label="for node in res:
+"]
+	23 [label="print(node, end=' ')
+"]
+	"23_calls" [label=print shape=box]
+	23 -> "23_calls" [label=calls style=dashed]
+	23 -> 22 [label=""]
+	22 -> 23 [label=res]
+	21 -> 22 [label=""]
+	19 -> 21 [label=""]
+	17 -> 19 [label=""]
+	1 -> 17 [label="__name__ == '__main__'"]
+	subgraph clusterdfsRec {
+		graph [label=dfsRec]
+		3 [label="visited[s] = True
+res.append(s)
+"]
+		"3_calls" [label="res.append" shape=box]
+		3 -> "3_calls" [label=calls style=dashed]
+		4 [label="for i in adj[s]:
+"]
+		5 [label="if not visited[i]:
+"]
+		7 [label="dfsRec(adj, visited, i, res)
+"]
+		"7_calls" [label=dfsRec shape=box]
+		7 -> "7_calls" [label=calls style=dashed]
+		7 -> 4 [label=""]
+		5 -> 7 [label="not visited[i]"]
+		5 -> 4 [label="(not not visited[i])"]
+		4 -> 5 [label="adj[s]"]
+		3 -> 4 [label=""]
+	}
+	subgraph clusterdfs {
+		graph [label=dfs]
+		11 [label="visited = [False] * len(adj)
+res = []
+dfsRec(adj, visited, 0, res)
+return res
+"]
+		"11_calls" [label="len
+dfsRec" shape=box]
+		11 -> "11_calls" [label=calls style=dashed]
+	}
+	subgraph clusteraddEdge {
+		graph [label=addEdge]
+		15 [label="adj[u].append(v)
+adj[v].append(u)
+"]
+		"15_calls" [label="adj.append
+adj.append" shape=box]
+		15 -> "15_calls" [label=calls style=dashed]
+	}
+}
