@@ -1,0 +1,283 @@
+methods:
+    - method:
+          id: M1
+          entry: N1
+          exit: N4
+          name: cw
+          type: unknown
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: unknown
+                      - name: b
+                        type: unknown
+                      - name: c
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - p = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1])
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p < 0;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: unknown
+                  next: null
+    - method:
+          id: M2
+          entry: N1
+          exit: N4
+          name: ccw
+          type: unknown
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: unknown
+                      - name: b
+                        type: unknown
+                      - name: c
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - p = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1])
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p > 0;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: unknown
+                  next: null
+    - method:
+          id: M3
+          entry: N1
+          exit: N7
+          name: convexHull
+          type: unknown
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: v
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - v.sort()
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - n = len(v)
+                  next: N4
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: n <= 3
+                            onTrue: N5
+                            onFalse: N6
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = v;
+                  next: N7
+              N6:
+                  type: block
+                  statements:
+                      - p1 = v[0]
+                      - p2 = v[n - 1]
+                  next: N8
+              N7:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: unknown
+                  next: null
+              N8:
+                  type: block
+                  statements:
+                      - up = []
+                      - down = []
+                  next: N9
+              N9:
+                  type: block
+                  statements:
+                      - up.append(tuple(p1))
+                      - down.append(p1)
+                  next: N10
+              N10:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N10a
+                  predicates:
+                      - predicate:
+                            ID: N10a
+                            statement: i in range(1, n)
+                            onTrue: N11
+                            onFalse: N12
+              N11:
+                  type: conditional
+                  startPredicate: N11a
+                  predicates:
+                      - predicate:
+                            ID: N11a
+                            statement: i == n - 1 or (not ccw(p1, v[i], p2))
+                            onTrue: N13
+                            onFalse: N14
+              N12:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N12a
+                  predicates:
+                      - predicate:
+                            ID: N12a
+                            statement: i in range(len(down) - 2, -1, -1)
+                            onTrue: N15
+                            onFalse: N16
+              N13:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N13a
+                  predicates:
+                      - predicate:
+                            ID: N13a
+                            statement: len(up) > 1 and ccw(up[len(up) - 2], up[len(up) - 1], v[i])
+                            onTrue: N18
+                            onFalse: N19
+              N14:
+                  type: conditional
+                  startPredicate: N14a
+                  predicates:
+                      - predicate:
+                            ID: N14a
+                            statement: i == n - 1 and  (not cw(p1, v[i], p2))
+                            onTrue: N20
+                            onFalse: N10
+              N15:
+                  type: block
+                  statements:
+                      - up.append(tuple(down[i]))
+                  next: N12
+              N16:
+                  type: block
+                  statements:
+                      - up = set(up)
+                      - up = list(up)
+                  next: N17
+              N17:
+                  type: block
+                  statements:
+                      - _return_value = up;
+                  next: N7
+              N18:
+                  type: block
+                  statements:
+                      - up.pop()
+                  next: N13
+              N19:
+                  type: block
+                  statements:
+                      - up.append(tuple(v[i]))
+                  next: N14
+              N20:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N20a
+                  predicates:
+                      - predicate:
+                            ID: N20a
+                            statement: (len(down) > 1) and cw(down[len(down) - 2], down[len(down) - 1], v[i])
+                            onTrue: N21
+                            onFalse: N22
+              N21:
+                  type: block
+                  statements:
+                      - down.pop()
+                  next: N20
+              N22:
+                  type: block
+                  statements:
+                      - down.append(v[i])
+                  next: N10
+    - method:
+          id: M4
+          entry: N1
+          exit: N6
+          name: isInside
+          type: unknown
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: points
+                        type: unknown
+                      - name: query
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - points.append(query)
+                      - points = convexHull(points)
+                  next: N3
+              N3:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: x in points
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: x == query
+                            onTrue: N7
+                            onFalse: N3
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = True;
+                  next: N6
+              N6:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: unknown
+                  next: null
+              N7:
+                  type: block
+                  statements:
+                      - _return_value = False;
+                  next: N6

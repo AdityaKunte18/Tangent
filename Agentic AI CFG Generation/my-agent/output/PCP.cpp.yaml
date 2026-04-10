@@ -1,0 +1,376 @@
+methods:
+    - method:
+          id: M1
+          entry: N1
+          exit: N5
+          name: cmp
+          type: bool
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: pair<int, int>&
+                      - name: b
+                        type: pair<int, int>&
+                  next: N2
+              N2:
+                  type: conditional
+                  startPredicate: N2a
+                  predicates:
+                      - predicate:
+                            ID: N2a
+                            statement: a.first == b.first
+                            onTrue: N3
+                            onFalse: N4
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = a.second < b.second;
+                  next: N5
+              N4:
+                  type: block
+                  statements:
+                      - _return_value = a.first < b.first;
+                  next: N5
+              N5:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: bool
+                  next: null
+    - method:
+          id: M2
+          entry: N1
+          exit: N4
+          name: cw
+          type: int
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: pair<int, int>&
+                      - name: b
+                        type: pair<int, int>&
+                      - name: c
+                        type: pair<int, int>&
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int p = a.first * (b.second - c.second) + b.first * (c.second - a.second) + c.first * (a.second - b.second);
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p < 0ll;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: int
+                  next: null
+    - method:
+          id: M3
+          entry: N1
+          exit: N4
+          name: ccw
+          type: int
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: pair<int, int>&
+                      - name: b
+                        type: pair<int, int>&
+                      - name: c
+                        type: pair<int, int>&
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int p = a.first * (b.second - c.second) + b.first * (c.second - a.second) + c.first * (a.second - b.second);
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p > 0ll;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: int
+                  next: null
+    - method:
+          id: M4
+          entry: N1
+          exit: N7
+          name: convexHull
+          type: vector<pair<int, int> >
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: v
+                        type: vector<pair<int, int> >&
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - sort(v.begin(), v.end(), cmp);
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - int n = v.size();
+                  next: N4
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: n <= 3
+                            onTrue: N5
+                            onFalse: N6
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = v;
+                  next: N7
+              N6:
+                  type: block
+                  statements:
+                      - pair<int, int> p1 = v[0];
+                      - pair<int, int> p2 = v[n - 1];
+                  next: N8
+              N7:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: vector<pair<int, int> >
+                  next: null
+              N8:
+                  type: block
+                  statements:
+                      - vector<pair<int, int>> up, down;
+                      - up.push_back(p1);
+                      - down.push_back(p1);
+                  next: N9
+              N9:
+                  type: loop
+                  iteratorStart: int i = 1
+                  iteratorUpdate: null
+                  startPredicate: N9a
+                  predicates:
+                      - predicate:
+                            ID: N9a
+                            statement: i < n
+                            onTrue: N10
+                            onFalse: N11
+              N10:
+                  type: conditional
+                  startPredicate: N10a
+                  predicates:
+                      - predicate:
+                            ID: N10a
+                            statement: i == n - 1 || !ccw(p1, v[i], p2)
+                            onTrue: N12
+                            onFalse: N13
+              N11:
+                  type: loop
+                  iteratorStart: int i = down.size() - 2
+                  iteratorUpdate: null
+                  startPredicate: N11a
+                  predicates:
+                      - predicate:
+                            ID: N11a
+                            statement: i > 0
+                            onTrue: N14
+                            onFalse: N15
+              N12:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N12a
+                  predicates:
+                      - predicate:
+                            ID: N12a
+                            statement: up.size() > 1 && ccw(up[up.size() - 2], up[up.size() - 1], v[i])
+                            onTrue: N18
+                            onFalse: N19
+              N13:
+                  type: conditional
+                  startPredicate: N13a
+                  predicates:
+                      - predicate:
+                            ID: N13a
+                            statement: i == n - 1 || !cw(p1, v[i], p2)
+                            onTrue: N20
+                            onFalse: N21
+              N14:
+                  type: block
+                  statements:
+                      - up.push_back(down[i]);
+                  next: N16
+              N15:
+                  type: block
+                  statements:
+                      - up.resize(unique(up.begin(), up.end())- up.begin());
+                  next: N17
+              N16:
+                  type: block
+                  statements:
+                      - i--
+                  next: N11
+              N17:
+                  type: block
+                  statements:
+                      - _return_value = up;
+                  next: N7
+              N18:
+                  type: block
+                  statements:
+                      - up.pop_back();
+                  next: N12
+              N19:
+                  type: block
+                  statements:
+                      - up.push_back(v[i]);
+                  next: N13
+              N20:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N20a
+                  predicates:
+                      - predicate:
+                            ID: N20a
+                            statement: down.size() > 1&& cw(down[down.size() - 2], down[down.size() - 1], v[i])
+                            onTrue: N22
+                            onFalse: N23
+              N21:
+                  type: block
+                  statements:
+                      - i++
+                  next: N9
+              N22:
+                  type: block
+                  statements:
+                      - down.pop_back();
+                  next: N20
+              N23:
+                  type: block
+                  statements:
+                      - down.push_back(v[i]);
+                  next: N21
+    - method:
+          id: M5
+          entry: N1
+          exit: N6
+          name: isInside
+          type: bool
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: points
+                        type: vector<pair<int, int> >
+                      - name: query
+                        type: pair<int, int>
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - points.push_back(query);
+                      - points = convexHull(points);
+                  next: N3
+              N3:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: "auto x : points"
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: x == query
+                            onTrue: N7
+                            onFalse: N3
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = true;
+                  next: N6
+              N6:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: bool
+                  next: null
+              N7:
+                  type: block
+                  statements:
+                      - _return_value = false;
+                  next: N6
+    - method:
+          id: M6
+          entry: N1
+          exit: N7
+          name: main
+          type: int
+          nodes:
+              N1:
+                  type: entry
+                  arguments: []
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int n = 7;
+                      - vector<pair<int, int> > points;
+                      - points = { { 1, 1 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 4, 2 }, { 4, 3 }, { 4, 4 } };
+                      - pair<int, int> query = { 3, 2 };
+                  next: N3
+              N3:
+                  type: conditional
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: isInside(points, query)
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: block
+                  statements:
+                      - cout << "YES" << endl;
+                  next: N6
+              N5:
+                  type: block
+                  statements:
+                      - cout << "NO" << endl;
+                  next: N6
+              N6:
+                  type: block
+                  statements:
+                      - _return_value = 0;
+                  next: N7
+              N7:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: int
+                  next: null

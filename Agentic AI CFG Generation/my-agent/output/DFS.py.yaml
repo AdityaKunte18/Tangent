@@ -1,0 +1,113 @@
+methods:
+    - method:
+          id: M1
+          entry: N1
+          exit: N5
+          name: dfsRec
+          type: None
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: adj
+                        type: unknown
+                      - name: visited
+                        type: unknown
+                      - name: s
+                        type: unknown
+                      - name: res
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - visited[s] = True
+                      - res.append(s)
+                  next: N3
+              N3:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: i in adj[s]
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: not visited[i]
+                            onTrue: N6
+                            onFalse: N3
+              N5:
+                  type: exit
+                  return: []
+                  next: null
+              N6:
+                  type: block
+                  statements:
+                      - dfsRec(adj, visited, i, res)
+                  next: N3
+    - method:
+          id: M2
+          entry: N1
+          exit: N4
+          name: dfs
+          type: unknown
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: adj
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - visited = [False] * len(adj)
+                      - res = []
+                      - dfsRec(adj, visited, 0, res)
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = res;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: unknown
+                  next: null
+    - method:
+          id: M3
+          entry: N1
+          exit: N3
+          name: addEdge
+          type: None
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: adj
+                        type: unknown
+                      - name: u
+                        type: unknown
+                      - name: v
+                        type: unknown
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - adj[u].append(v)
+                      - adj[v].append(u)
+                  next: N3
+              N3:
+                  type: exit
+                  return: []
+                  next: null
