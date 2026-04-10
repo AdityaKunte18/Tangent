@@ -19,7 +19,7 @@ public class DFS {
         return res;
     }
 
-    static addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
+    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
         adj.get(u).add(v);
         adj.get(v).add(u);
     }
