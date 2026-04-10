@@ -1,0 +1,5 @@
+digraph "CFG for '_ZNSt12_Vector_baseIiSaIiEEC2Ev' function" {
+	label="CFG for '_ZNSt12_Vector_baseIiSaIiEEC2Ev' function";
+
+	Node0x620c45844e10 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{1:\l|  %2 = alloca ptr, align 8\l  store ptr %0, ptr %2, align 8\l  %3 = load ptr, ptr %2, align 8\l  %4 = getelementptr inbounds %\"struct.std::_Vector_base\", ptr %3, i32 0, i32 0\l  call void @_ZNSt12_Vector_baseIiSaIiEE12_Vector_implC2Ev(ptr noundef nonnull\l... align 8 dereferenceable(24) %4) #11\l  ret void\l}"];
+}

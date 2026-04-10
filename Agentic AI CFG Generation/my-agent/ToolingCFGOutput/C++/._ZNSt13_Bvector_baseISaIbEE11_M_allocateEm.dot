@@ -1,0 +1,5 @@
+digraph "CFG for '_ZNSt13_Bvector_baseISaIbEE11_M_allocateEm' function" {
+	label="CFG for '_ZNSt13_Bvector_baseISaIbEE11_M_allocateEm' function";
+
+	Node0x620c45860f20 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{2:\l|  %3 = alloca ptr, align 8\l  %4 = alloca i64, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca i64, align 8\l  %7 = alloca ptr, align 8\l  store ptr %0, ptr %5, align 8\l  store i64 %1, ptr %6, align 8\l  %8 = load ptr, ptr %5, align 8\l  %9 = getelementptr inbounds %\"struct.std::_Bvector_base\", ptr %8, i32 0, i32\l... 0\l  %10 = load i64, ptr %6, align 8\l  %11 = call noundef i64 @_ZNSt13_Bvector_baseISaIbEE8_S_nwordEm(i64 noundef\l... %10)\l  store ptr %9, ptr %3, align 8\l  store i64 %11, ptr %4, align 8\l  %12 = load ptr, ptr %3, align 8\l  %13 = load i64, ptr %4, align 8\l  %14 = call noundef ptr @_ZNSt15__new_allocatorImE8allocateEmPKv(ptr noundef\l... nonnull align 1 dereferenceable(1) %12, i64 noundef %13, ptr noundef null)\l  store ptr %14, ptr %7, align 8\l  %15 = load ptr, ptr %7, align 8\l  ret ptr %15\l}"];
+}

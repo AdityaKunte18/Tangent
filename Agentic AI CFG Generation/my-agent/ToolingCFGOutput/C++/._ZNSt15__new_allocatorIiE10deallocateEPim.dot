@@ -1,0 +1,5 @@
+digraph "CFG for '_ZNSt15__new_allocatorIiE10deallocateEPim' function" {
+	label="CFG for '_ZNSt15__new_allocatorIiE10deallocateEPim' function";
+
+	Node0x620c4585b3a0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{3:\l|  %4 = alloca ptr, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca i64, align 8\l  store ptr %0, ptr %4, align 8\l  store ptr %1, ptr %5, align 8\l  store i64 %2, ptr %6, align 8\l  %7 = load ptr, ptr %4, align 8\l  %8 = load ptr, ptr %5, align 8\l  call void @_ZdlPv(ptr noundef %8) #11\l  ret void\l}"];
+}

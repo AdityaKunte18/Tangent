@@ -1,0 +1,12 @@
+digraph "CFG for '_ZNSt14_Bit_referenceaSEb' function" {
+	label="CFG for '_ZNSt14_Bit_referenceaSEb' function";
+
+	Node0x620c45830fb0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{2:\l|  %3 = alloca ptr, align 8\l  %4 = alloca i8, align 1\l  store ptr %0, ptr %3, align 8\l  %5 = zext i1 %1 to i8\l  store i8 %5, ptr %4, align 1\l  %6 = load ptr, ptr %3, align 8\l  %7 = load i8, ptr %4, align 1\l  %8 = trunc i8 %7 to i1\l  br i1 %8, label %9, label %16\l|{<s0>T|<s1>F}}"];
+	Node0x620c45830fb0:s0 -> Node0x620c45832480[tooltip="2 -> 9\nProbability 50.00%" ];
+	Node0x620c45830fb0:s1 -> Node0x620c458324d0[tooltip="2 -> 16\nProbability 50.00%" ];
+	Node0x620c45832480 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#be242e70" fontname="Courier",label="{9:\l|  %10 = getelementptr inbounds %\"struct.std::_Bit_reference\", ptr %6, i32 0,\l... i32 1\l  %11 = load i64, ptr %10, align 8\l  %12 = getelementptr inbounds %\"struct.std::_Bit_reference\", ptr %6, i32 0,\l... i32 0\l  %13 = load ptr, ptr %12, align 8\l  %14 = load i64, ptr %13, align 8\l  %15 = or i64 %14, %11\l  store i64 %15, ptr %13, align 8\l  br label %24\l}"];
+	Node0x620c45832480 -> Node0x620c45832520[tooltip="9 -> 24\nProbability 100.00%" ];
+	Node0x620c458324d0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#be242e70" fontname="Courier",label="{16:\l|  %17 = getelementptr inbounds %\"struct.std::_Bit_reference\", ptr %6, i32 0,\l... i32 1\l  %18 = load i64, ptr %17, align 8\l  %19 = xor i64 %18, -1\l  %20 = getelementptr inbounds %\"struct.std::_Bit_reference\", ptr %6, i32 0,\l... i32 0\l  %21 = load ptr, ptr %20, align 8\l  %22 = load i64, ptr %21, align 8\l  %23 = and i64 %22, %19\l  store i64 %23, ptr %21, align 8\l  br label %24\l}"];
+	Node0x620c458324d0 -> Node0x620c45832520[tooltip="16 -> 24\nProbability 100.00%" ];
+	Node0x620c45832520 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{24:\l|  ret ptr %6\l}"];
+}
