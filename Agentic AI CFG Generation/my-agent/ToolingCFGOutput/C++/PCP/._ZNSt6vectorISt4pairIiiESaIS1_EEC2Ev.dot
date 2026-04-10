@@ -1,0 +1,5 @@
+digraph "CFG for '_ZNSt6vectorISt4pairIiiESaIS1_EEC2Ev' function" {
+	label="CFG for '_ZNSt6vectorISt4pairIiiESaIS1_EEC2Ev' function";
+
+	Node0x5e9b57d5a9e0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{1:\l|  %2 = alloca ptr, align 8\l  store ptr %0, ptr %2, align 8\l  %3 = load ptr, ptr %2, align 8\l  call void @_ZNSt12_Vector_baseISt4pairIiiESaIS1_EEC2Ev(ptr noundef nonnull\l... align 8 dereferenceable(24) %3) #13\l  ret void\l}"];
+}

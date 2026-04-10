@@ -1,0 +1,12 @@
+digraph "CFG for '_ZNSt12_Vector_baseISt4pairIiiESaIS1_EE11_M_allocateEm' function" {
+	label="CFG for '_ZNSt12_Vector_baseISt4pairIiiESaIS1_EE11_M_allocateEm' function";
+
+	Node0x5e9b57dab1f0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{2:\l|  %3 = alloca ptr, align 8\l  %4 = alloca i64, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca i64, align 8\l  store ptr %0, ptr %5, align 8\l  store i64 %1, ptr %6, align 8\l  %7 = load ptr, ptr %5, align 8\l  %8 = load i64, ptr %6, align 8\l  %9 = icmp ne i64 %8, 0\l  br i1 %9, label %10, label %16\l|{<s0>T|<s1>F}}"];
+	Node0x5e9b57dab1f0:s0 -> Node0x5e9b57dab240[tooltip="2 -> 10\nProbability 62.50%" ];
+	Node0x5e9b57dab1f0:s1 -> Node0x5e9b57dab290[tooltip="2 -> 16\nProbability 37.50%" ];
+	Node0x5e9b57dab240 [shape=record,color="#b70d28ff", style=filled, fillcolor="#bb1b2c70" fontname="Courier",label="{10:\l|  %11 = getelementptr inbounds %\"struct.std::_Vector_base\", ptr %7, i32 0,\l... i32 0\l  %12 = load i64, ptr %6, align 8\l  store ptr %11, ptr %3, align 8\l  store i64 %12, ptr %4, align 8\l  %13 = load ptr, ptr %3, align 8\l  %14 = load i64, ptr %4, align 8\l  %15 = call noundef ptr\l... @_ZNSt15__new_allocatorISt4pairIiiEE8allocateEmPKv(ptr noundef nonnull align\l... 1 dereferenceable(1) %13, i64 noundef %14, ptr noundef null)\l  br label %17\l}"];
+	Node0x5e9b57dab240 -> Node0x5e9b57dab2e0[tooltip="10 -> 17\nProbability 100.00%" ];
+	Node0x5e9b57dab290 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#c32e3170" fontname="Courier",label="{16:\l|  br label %17\l}"];
+	Node0x5e9b57dab290 -> Node0x5e9b57dab2e0[tooltip="16 -> 17\nProbability 100.00%" ];
+	Node0x5e9b57dab2e0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{17:\l|  %18 = phi ptr [ %15, %10 ], [ null, %16 ]\l  ret ptr %18\l}"];
+}

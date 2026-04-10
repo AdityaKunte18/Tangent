@@ -1,0 +1,19 @@
+digraph "CFG for '_Z9method005ii' function" {
+	label="CFG for '_Z9method005ii' function";
+
+	Node0x6301a4b23b10 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{2:\l|  %3 = alloca i32, align 4\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  %6 = alloca i32, align 4\l  store i32 %0, ptr %3, align 4\l  store i32 %1, ptr %4, align 4\l  store i32 0, ptr %5, align 4\l  store i32 0, ptr %6, align 4\l  br label %7\l}"];
+	Node0x6301a4b23b10 -> Node0x6301a4b23b60[tooltip="2 -> 7\nProbability 100.00%" ];
+	Node0x6301a4b23b60 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{7:\l|  %8 = load i32, ptr %6, align 4\l  %9 = load i32, ptr %4, align 4\l  %10 = icmp slt i32 %8, %9\l  br i1 %10, label %11, label %25\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b23b60:s0 -> Node0x6301a4b23bb0[tooltip="7 -> 11\nProbability 96.88%" ];
+	Node0x6301a4b23b60:s1 -> Node0x6301a4b23cf0[tooltip="7 -> 25\nProbability 3.12%" ];
+	Node0x6301a4b23bb0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{11:\l|  %12 = load i32, ptr %5, align 4\l  %13 = add nsw i32 %12, 1\l  store i32 %13, ptr %5, align 4\l  %14 = load i32, ptr %5, align 4\l  %15 = srem i32 %14, 5\l  %16 = icmp ne i32 %15, 0\l  br i1 %16, label %17, label %20\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b23bb0:s0 -> Node0x6301a4b23c00[tooltip="11 -> 17\nProbability 62.50%" ];
+	Node0x6301a4b23bb0:s1 -> Node0x6301a4b23c50[tooltip="11 -> 20\nProbability 37.50%" ];
+	Node0x6301a4b23c00 [shape=record,color="#b70d28ff", style=filled, fillcolor="#bb1b2c70" fontname="Courier",label="{17:\l|  %18 = load i32, ptr %5, align 4\l  %19 = add nsw i32 %18, 2\l  store i32 %19, ptr %5, align 4\l  br label %20\l}"];
+	Node0x6301a4b23c00 -> Node0x6301a4b23c50[tooltip="17 -> 20\nProbability 100.00%" ];
+	Node0x6301a4b23c50 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{20:\l|  br label %21\l}"];
+	Node0x6301a4b23c50 -> Node0x6301a4b23ca0[tooltip="20 -> 21\nProbability 100.00%" ];
+	Node0x6301a4b23ca0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{21:\l|  %22 = load i32, ptr %3, align 4\l  %23 = load i32, ptr %6, align 4\l  %24 = add nsw i32 %23, %22\l  store i32 %24, ptr %6, align 4\l  br label %7, !llvm.loop !6\l}"];
+	Node0x6301a4b23ca0 -> Node0x6301a4b23b60[tooltip="21 -> 7\nProbability 100.00%" ];
+	Node0x6301a4b23cf0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{25:\l|  %26 = load i32, ptr %5, align 4\l  ret i32 %26\l}"];
+}

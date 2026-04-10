@@ -1,0 +1,9 @@
+digraph "CFG for '_ZNSt6vectorISt4pairIiiESaIS1_EE17_S_check_init_lenEmRKS2_' function" {
+	label="CFG for '_ZNSt6vectorISt4pairIiiESaIS1_EE17_S_check_init_lenEmRKS2_' function";
+
+	Node0x5e9b57dda7d0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{2:\l|  %3 = alloca ptr, align 8\l  %4 = alloca ptr, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca ptr, align 8\l  %7 = alloca ptr, align 8\l  %8 = alloca i64, align 8\l  %9 = alloca ptr, align 8\l  %10 = alloca %\"class.std::allocator\", align 1\l  store i64 %0, ptr %8, align 8\l  store ptr %1, ptr %9, align 8\l  %11 = load i64, ptr %8, align 8\l  %12 = load ptr, ptr %9, align 8\l  store ptr %10, ptr %5, align 8\l  store ptr %12, ptr %6, align 8\l  %13 = load ptr, ptr %5, align 8\l  %14 = load ptr, ptr %6, align 8\l  store ptr %13, ptr %3, align 8\l  store ptr %14, ptr %4, align 8\l  %15 = load ptr, ptr %3, align 8\l  %16 = call noundef i64\l... @_ZNSt6vectorISt4pairIiiESaIS1_EE11_S_max_sizeERKS2_(ptr noundef nonnull\l... align 1 dereferenceable(1) %10) #13\l  %17 = icmp ugt i64 %11, %16\l  store ptr %10, ptr %7, align 8\l  %18 = load ptr, ptr %7, align 8\l  call void @_ZNSt15__new_allocatorISt4pairIiiEED2Ev(ptr noundef nonnull align\l... 1 dereferenceable(1) %18) #13\l  br i1 %17, label %19, label %20\l|{<s0>T|<s1>F}}"];
+	Node0x5e9b57dda7d0:s0 -> Node0x5e9b57ddb030[tooltip="2 -> 19\nProbability 0.00%" ];
+	Node0x5e9b57dda7d0:s1 -> Node0x5e9b57ddb080[tooltip="2 -> 20\nProbability 100.00%" ];
+	Node0x5e9b57ddb030 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f4c5ad70" fontname="Courier",label="{19:\l|  call void @_ZSt20__throw_length_errorPKc(ptr noundef @.str.4) #14\l  unreachable\l}"];
+	Node0x5e9b57ddb080 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{20:\l|  %21 = load i64, ptr %8, align 8\l  ret i64 %21\l}"];
+}

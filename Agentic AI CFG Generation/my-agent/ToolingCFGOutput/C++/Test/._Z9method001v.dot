@@ -1,0 +1,5 @@
+digraph "CFG for '_Z9method001v' function" {
+	label="CFG for '_Z9method001v' function";
+
+	Node0x6301a4b15260 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{0:\l|  %1 = alloca i32, align 4\l  %2 = alloca i32, align 4\l  store i32 1, ptr %1, align 4\l  store i32 2, ptr %2, align 4\l  %3 = load i32, ptr %1, align 4\l  %4 = load i32, ptr %2, align 4\l  %5 = add nsw i32 %3, %4\l  %6 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZNSolsEi(ptr\l... noundef nonnull align 8 dereferenceable(8) @_ZSt4cout, i32 noundef %5)\l  %7 = call noundef nonnull align 8 dereferenceable(8) ptr\l... @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %6, ptr\l... noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)\l  ret void\l}"];
+}

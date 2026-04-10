@@ -1,0 +1,12 @@
+digraph "CFG for '_Z9method002ii' function" {
+	label="CFG for '_Z9method002ii' function";
+
+	Node0x6301a4b126c0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{2:\l|  %3 = alloca i32, align 4\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  store i32 %0, ptr %4, align 4\l  store i32 %1, ptr %5, align 4\l  %6 = load i32, ptr %4, align 4\l  %7 = load i32, ptr %5, align 4\l  %8 = add nsw i32 %6, %7\l  %9 = icmp sgt i32 %8, 0\l  br i1 %9, label %10, label %13\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b126c0:s0 -> Node0x6301a4b12710[tooltip="2 -> 10\nProbability 62.50%" ];
+	Node0x6301a4b126c0:s1 -> Node0x6301a4b12760[tooltip="2 -> 13\nProbability 37.50%" ];
+	Node0x6301a4b12710 [shape=record,color="#b70d28ff", style=filled, fillcolor="#bb1b2c70" fontname="Courier",label="{10:\l|  %11 = call noundef nonnull align 8 dereferenceable(8) ptr\l... @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull\l... align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str)\l  %12 = call noundef nonnull align 8 dereferenceable(8) ptr\l... @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %11, ptr\l... noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)\l  store i32 1, ptr %3, align 4\l  br label %16\l}"];
+	Node0x6301a4b12710 -> Node0x6301a4b127b0[tooltip="10 -> 16\nProbability 100.00%" ];
+	Node0x6301a4b12760 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#c32e3170" fontname="Courier",label="{13:\l|  %14 = call noundef nonnull align 8 dereferenceable(8) ptr\l... @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull\l... align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str.1)\l  %15 = call noundef nonnull align 8 dereferenceable(8) ptr\l... @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %14, ptr\l... noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)\l  store i32 0, ptr %3, align 4\l  br label %16\l}"];
+	Node0x6301a4b12760 -> Node0x6301a4b127b0[tooltip="13 -> 16\nProbability 100.00%" ];
+	Node0x6301a4b127b0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{16:\l|  %17 = load i32, ptr %3, align 4\l  ret i32 %17\l}"];
+}

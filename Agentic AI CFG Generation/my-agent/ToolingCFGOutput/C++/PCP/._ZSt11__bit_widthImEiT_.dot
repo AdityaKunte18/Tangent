@@ -1,0 +1,5 @@
+digraph "CFG for '_ZSt11__bit_widthImEiT_' function" {
+	label="CFG for '_ZSt11__bit_widthImEiT_' function";
+
+	Node0x5e9b57d957c0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{1:\l|  %2 = alloca i64, align 8\l  %3 = alloca i32, align 4\l  store i64 %0, ptr %2, align 8\l  store i32 64, ptr %3, align 4\l  %4 = load i64, ptr %2, align 8\l  %5 = call noundef i32 @_ZSt13__countl_zeroImEiT_(i64 noundef %4) #13\l  %6 = sub nsw i32 64, %5\l  ret i32 %6\l}"];
+}

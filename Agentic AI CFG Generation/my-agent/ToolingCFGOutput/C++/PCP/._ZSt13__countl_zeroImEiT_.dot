@@ -1,0 +1,12 @@
+digraph "CFG for '_ZSt13__countl_zeroImEiT_' function" {
+	label="CFG for '_ZSt13__countl_zeroImEiT_' function";
+
+	Node0x5e9b57d95810 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{1:\l|  %2 = alloca i32, align 4\l  %3 = alloca i64, align 8\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  %6 = alloca i32, align 4\l  %7 = alloca i32, align 4\l  %8 = alloca i32, align 4\l  store i64 %0, ptr %3, align 8\l  store i32 64, ptr %4, align 4\l  %9 = load i64, ptr %3, align 8\l  %10 = icmp eq i64 %9, 0\l  br i1 %10, label %11, label %12\l|{<s0>T|<s1>F}}"];
+	Node0x5e9b57d95810:s0 -> Node0x5e9b57d95c60[tooltip="1 -> 11\nProbability 37.50%" ];
+	Node0x5e9b57d95810:s1 -> Node0x5e9b57d95cb0[tooltip="1 -> 12\nProbability 62.50%" ];
+	Node0x5e9b57d95c60 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#c32e3170" fontname="Courier",label="{11:\l|  store i32 64, ptr %2, align 4\l  br label %17\l}"];
+	Node0x5e9b57d95c60 -> Node0x5e9b57d95d00[tooltip="11 -> 17\nProbability 100.00%" ];
+	Node0x5e9b57d95cb0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#bb1b2c70" fontname="Courier",label="{12:\l|  store i32 64, ptr %5, align 4\l  store i32 64, ptr %6, align 4\l  store i32 32, ptr %7, align 4\l  store i32 0, ptr %8, align 4\l  %13 = load i64, ptr %3, align 8\l  %14 = call i64 @llvm.ctlz.i64(i64 %13, i1 true)\l  %15 = trunc i64 %14 to i32\l  %16 = sub nsw i32 %15, 0\l  store i32 %16, ptr %2, align 4\l  br label %17\l}"];
+	Node0x5e9b57d95cb0 -> Node0x5e9b57d95d00[tooltip="12 -> 17\nProbability 100.00%" ];
+	Node0x5e9b57d95d00 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{17:\l|  %18 = load i32, ptr %2, align 4\l  ret i32 %18\l}"];
+}

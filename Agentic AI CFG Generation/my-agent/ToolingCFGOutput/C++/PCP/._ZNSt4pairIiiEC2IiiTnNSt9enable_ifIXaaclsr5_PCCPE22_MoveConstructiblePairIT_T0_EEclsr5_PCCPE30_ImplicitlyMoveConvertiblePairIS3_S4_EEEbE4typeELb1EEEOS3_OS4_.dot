@@ -1,0 +1,5 @@
+digraph "CFG for '_ZNSt4pairIiiEC2IiiTnNSt9enable_ifIXaaclsr5_PCCPE22_MoveConstructiblePairIT_T0_EEclsr5_PCCPE30_ImplicitlyMoveConvertiblePairIS3_S4_EEEbE4typeELb1EEEOS3_OS4_' function" {
+	label="CFG for '_ZNSt4pairIiiEC2IiiTnNSt9enable_ifIXaaclsr5_PCCPE22_MoveConstructiblePairIT_T0_EEclsr5_PCCPE30_ImplicitlyMoveConvertiblePairIS3_S4_EEEbE4typeELb1EEEOS3_OS4_' function";
+
+	Node0x5e9b57d66230 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{3:\l|  %4 = alloca ptr, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca ptr, align 8\l  store ptr %0, ptr %4, align 8\l  store ptr %1, ptr %5, align 8\l  store ptr %2, ptr %6, align 8\l  %7 = load ptr, ptr %4, align 8\l  %8 = getelementptr inbounds %\"struct.std::pair\", ptr %7, i32 0, i32 0\l  %9 = load ptr, ptr %5, align 8\l  %10 = load i32, ptr %9, align 4\l  store i32 %10, ptr %8, align 4\l  %11 = getelementptr inbounds %\"struct.std::pair\", ptr %7, i32 0, i32 1\l  %12 = load ptr, ptr %6, align 8\l  %13 = load i32, ptr %12, align 4\l  store i32 %13, ptr %11, align 4\l  ret void\l}"];
+}

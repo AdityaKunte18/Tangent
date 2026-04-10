@@ -1,0 +1,13 @@
+digraph "CFG for '_ZNSt15__new_allocatorISt4pairIiiEE8allocateEmPKv' function" {
+	label="CFG for '_ZNSt15__new_allocatorISt4pairIiiEE8allocateEmPKv' function";
+
+	Node0x5e9b57dab330 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{3:\l|  %4 = alloca ptr, align 8\l  %5 = alloca ptr, align 8\l  %6 = alloca i64, align 8\l  %7 = alloca ptr, align 8\l  store ptr %0, ptr %5, align 8\l  store i64 %1, ptr %6, align 8\l  store ptr %2, ptr %7, align 8\l  %8 = load ptr, ptr %5, align 8\l  %9 = load i64, ptr %6, align 8\l  store ptr %8, ptr %4, align 8\l  %10 = load ptr, ptr %4, align 8\l  %11 = icmp ugt i64 %9, 1152921504606846975\l  br i1 %11, label %12, label %17\l|{<s0>T|<s1>F}}"];
+	Node0x5e9b57dab330:s0 -> Node0x5e9b57dac080[tooltip="3 -> 12\nProbability 0.00%" ];
+	Node0x5e9b57dab330:s1 -> Node0x5e9b57dac170[tooltip="3 -> 17\nProbability 100.00%" ];
+	Node0x5e9b57dac080 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f4c5ad70" fontname="Courier",label="{12:\l|  %13 = load i64, ptr %6, align 8\l  %14 = icmp ugt i64 %13, 2305843009213693951\l  br i1 %14, label %15, label %16\l|{<s0>T|<s1>F}}"];
+	Node0x5e9b57dac080:s0 -> Node0x5e9b57dac0d0[tooltip="12 -> 15\nProbability 50.00%" ];
+	Node0x5e9b57dac080:s1 -> Node0x5e9b57dac120[tooltip="12 -> 16\nProbability 50.00%" ];
+	Node0x5e9b57dac0d0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f3c7b170" fontname="Courier",label="{15:\l|  call void @_ZSt28__throw_bad_array_new_lengthv() #13\l  unreachable\l}"];
+	Node0x5e9b57dac120 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f3c7b170" fontname="Courier",label="{16:\l|  call void @_ZSt17__throw_bad_allocv() #13\l  unreachable\l}"];
+	Node0x5e9b57dac170 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{17:\l|  %18 = load i64, ptr %6, align 8\l  %19 = mul i64 %18, 8\l  %20 = call noalias noundef nonnull ptr @_Znwm(i64 noundef %19) #14\l  ret ptr %20\l}"];
+}

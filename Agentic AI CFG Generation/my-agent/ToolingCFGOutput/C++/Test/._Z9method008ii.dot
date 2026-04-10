@@ -1,0 +1,12 @@
+digraph "CFG for '_Z9method008ii' function" {
+	label="CFG for '_Z9method008ii' function";
+
+	Node0x6301a4b272e0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{2:\l|  %3 = alloca i32, align 4\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  %6 = alloca i32, align 4\l  store i32 %0, ptr %3, align 4\l  store i32 %1, ptr %4, align 4\l  store i32 0, ptr %5, align 4\l  store i32 0, ptr %6, align 4\l  br label %7\l}"];
+	Node0x6301a4b272e0 -> Node0x6301a4b28bd0[tooltip="2 -> 7\nProbability 100.00%" ];
+	Node0x6301a4b28bd0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{7:\l|  %8 = load i32, ptr %5, align 4\l  %9 = add nsw i32 %8, 1\l  store i32 %9, ptr %5, align 4\l  %10 = load i32, ptr %5, align 4\l  %11 = load i32, ptr %4, align 4\l  %12 = add nsw i32 %10, %11\l  %13 = load i32, ptr %6, align 4\l  %14 = add nsw i32 %13, %12\l  store i32 %14, ptr %6, align 4\l  br label %15\l}"];
+	Node0x6301a4b28bd0 -> Node0x6301a4b28c20[tooltip="7 -> 15\nProbability 100.00%" ];
+	Node0x6301a4b28c20 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{15:\l|  %16 = load i32, ptr %5, align 4\l  %17 = load i32, ptr %3, align 4\l  %18 = srem i32 %16, %17\l  %19 = load i32, ptr %6, align 4\l  %20 = icmp eq i32 %18, %19\l  br i1 %20, label %7, label %21, !llvm.loop !6\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b28c20:s0 -> Node0x6301a4b28bd0[tooltip="15 -> 7\nProbability 96.88%" ];
+	Node0x6301a4b28c20:s1 -> Node0x6301a4b28c70[tooltip="15 -> 21\nProbability 3.12%" ];
+	Node0x6301a4b28c70 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{21:\l|  %22 = load i32, ptr %5, align 4\l  ret i32 %22\l}"];
+}

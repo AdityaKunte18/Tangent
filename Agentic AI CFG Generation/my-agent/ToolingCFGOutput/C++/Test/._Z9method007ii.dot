@@ -1,0 +1,30 @@
+digraph "CFG for '_Z9method007ii' function" {
+	label="CFG for '_Z9method007ii' function";
+
+	Node0x6301a4b23d40 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#ec7f6370" fontname="Courier",label="{2:\l|  %3 = alloca i32, align 4\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  %6 = alloca i32, align 4\l  %7 = alloca i32, align 4\l  store i32 %0, ptr %3, align 4\l  store i32 %1, ptr %4, align 4\l  store i32 0, ptr %5, align 4\l  store i32 0, ptr %6, align 4\l  br label %8\l}"];
+	Node0x6301a4b23d40 -> Node0x6301a4b25de0[tooltip="2 -> 8\nProbability 100.00%" ];
+	Node0x6301a4b25de0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{8:\l|  %9 = load i32, ptr %6, align 4\l  %10 = load i32, ptr %4, align 4\l  %11 = icmp slt i32 %9, %10\l  br i1 %11, label %12, label %35\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b25de0:s0 -> Node0x6301a4b26fc0[tooltip="8 -> 12\nProbability 96.88%" ];
+	Node0x6301a4b25de0:s1 -> Node0x6301a4b27290[tooltip="8 -> 35\nProbability 3.12%" ];
+	Node0x6301a4b26fc0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{12:\l|  %13 = load i32, ptr %3, align 4\l  store i32 %13, ptr %7, align 4\l  br label %14\l}"];
+	Node0x6301a4b26fc0 -> Node0x6301a4b27010[tooltip="12 -> 14\nProbability 100.00%" ];
+	Node0x6301a4b27010 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{14:\l|  %15 = load i32, ptr %7, align 4\l  %16 = icmp sge i32 %15, 0\l  br i1 %16, label %17, label %31\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b27010:s0 -> Node0x6301a4b27060[tooltip="14 -> 17\nProbability 96.88%" ];
+	Node0x6301a4b27010:s1 -> Node0x6301a4b271f0[tooltip="14 -> 31\nProbability 3.12%" ];
+	Node0x6301a4b27060 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{17:\l|  %18 = load i32, ptr %7, align 4\l  %19 = load i32, ptr %6, align 4\l  %20 = icmp eq i32 %18, %19\l  br i1 %20, label %21, label %24\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b27060:s0 -> Node0x6301a4b270b0[tooltip="17 -> 21\nProbability 50.00%" ];
+	Node0x6301a4b27060:s1 -> Node0x6301a4b27100[tooltip="17 -> 24\nProbability 50.00%" ];
+	Node0x6301a4b270b0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#be242e70" fontname="Courier",label="{21:\l|  %22 = load i32, ptr %5, align 4\l  %23 = add nsw i32 %22, 2\l  store i32 %23, ptr %5, align 4\l  br label %27\l}"];
+	Node0x6301a4b270b0 -> Node0x6301a4b27150[tooltip="21 -> 27\nProbability 100.00%" ];
+	Node0x6301a4b27100 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#be242e70" fontname="Courier",label="{24:\l|  %25 = load i32, ptr %5, align 4\l  %26 = add nsw i32 %25, 3\l  store i32 %26, ptr %5, align 4\l  br label %27\l}"];
+	Node0x6301a4b27100 -> Node0x6301a4b27150[tooltip="24 -> 27\nProbability 100.00%" ];
+	Node0x6301a4b27150 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{27:\l|  br label %28\l}"];
+	Node0x6301a4b27150 -> Node0x6301a4b271a0[tooltip="27 -> 28\nProbability 100.00%" ];
+	Node0x6301a4b271a0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{28:\l|  %29 = load i32, ptr %7, align 4\l  %30 = add nsw i32 %29, -1\l  store i32 %30, ptr %7, align 4\l  br label %14, !llvm.loop !6\l}"];
+	Node0x6301a4b271a0 -> Node0x6301a4b27010[tooltip="28 -> 14\nProbability 100.00%" ];
+	Node0x6301a4b271f0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{31:\l|  br label %32\l}"];
+	Node0x6301a4b271f0 -> Node0x6301a4b27240[tooltip="31 -> 32\nProbability 100.00%" ];
+	Node0x6301a4b27240 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{32:\l|  %33 = load i32, ptr %6, align 4\l  %34 = add nsw i32 %33, 1\l  store i32 %34, ptr %6, align 4\l  br label %8, !llvm.loop !8\l}"];
+	Node0x6301a4b27240 -> Node0x6301a4b25de0[tooltip="32 -> 8\nProbability 100.00%" ];
+	Node0x6301a4b27290 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#ec7f6370" fontname="Courier",label="{35:\l|  %36 = load i32, ptr %5, align 4\l  ret i32 %36\l}"];
+}

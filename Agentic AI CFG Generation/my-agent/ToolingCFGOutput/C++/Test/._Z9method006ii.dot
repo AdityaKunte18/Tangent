@@ -1,0 +1,22 @@
+digraph "CFG for '_Z9method006ii' function" {
+	label="CFG for '_Z9method006ii' function";
+
+	Node0x6301a4b25b60 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d0473d70" fontname="Courier",label="{2:\l|  %3 = alloca i32, align 4\l  %4 = alloca i32, align 4\l  %5 = alloca i32, align 4\l  %6 = alloca i32, align 4\l  store i32 %0, ptr %4, align 4\l  store i32 %1, ptr %5, align 4\l  store i32 0, ptr %6, align 4\l  %7 = load i32, ptr %4, align 4\l  %8 = icmp sgt i32 %7, 0\l  br i1 %8, label %9, label %24\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b25b60:s0 -> Node0x6301a4b25bb0[tooltip="2 -> 9\nProbability 62.50%" ];
+	Node0x6301a4b25b60:s1 -> Node0x6301a4b25d40[tooltip="2 -> 24\nProbability 37.50%" ];
+	Node0x6301a4b25bb0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d24b4070" fontname="Courier",label="{9:\l|  %10 = load i32, ptr %5, align 4\l  %11 = icmp sgt i32 %10, 0\l  br i1 %11, label %12, label %24\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b25bb0:s0 -> Node0x6301a4b25c00[tooltip="9 -> 12\nProbability 62.50%" ];
+	Node0x6301a4b25bb0:s1 -> Node0x6301a4b25d40[tooltip="9 -> 24\nProbability 37.50%" ];
+	Node0x6301a4b25c00 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{12:\l|  br label %13\l}"];
+	Node0x6301a4b25c00 -> Node0x6301a4b25c50[tooltip="12 -> 13\nProbability 100.00%" ];
+	Node0x6301a4b25c50 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{13:\l|  %14 = load i32, ptr %6, align 4\l  %15 = load i32, ptr %4, align 4\l  %16 = load i32, ptr %5, align 4\l  %17 = add nsw i32 %15, %16\l  %18 = icmp slt i32 %14, %17\l  br i1 %18, label %19, label %22\l|{<s0>T|<s1>F}}"];
+	Node0x6301a4b25c50:s0 -> Node0x6301a4b25ca0[tooltip="13 -> 19\nProbability 96.88%" ];
+	Node0x6301a4b25c50:s1 -> Node0x6301a4b25cf0[tooltip="13 -> 22\nProbability 3.12%" ];
+	Node0x6301a4b25ca0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870" fontname="Courier",label="{19:\l|  %20 = load i32, ptr %6, align 4\l  %21 = add nsw i32 %20, 1\l  store i32 %21, ptr %6, align 4\l  br label %13, !llvm.loop !6\l}"];
+	Node0x6301a4b25ca0 -> Node0x6301a4b25c50[tooltip="19 -> 13\nProbability 100.00%" ];
+	Node0x6301a4b25cf0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d6524470" fontname="Courier",label="{22:\l|  %23 = load i32, ptr %6, align 4\l  store i32 %23, ptr %3, align 4\l  br label %25\l}"];
+	Node0x6301a4b25cf0 -> Node0x6301a4b25d90[tooltip="22 -> 25\nProbability 100.00%" ];
+	Node0x6301a4b25d40 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d24b4070" fontname="Courier",label="{24:\l|  store i32 -1, ptr %3, align 4\l  br label %25\l}"];
+	Node0x6301a4b25d40 -> Node0x6301a4b25d90[tooltip="24 -> 25\nProbability 100.00%" ];
+	Node0x6301a4b25d90 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#d0473d70" fontname="Courier",label="{25:\l|  %26 = load i32, ptr %3, align 4\l  ret i32 %26\l}"];
+}
