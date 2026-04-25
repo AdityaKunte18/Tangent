@@ -1,0 +1,361 @@
+methods:
+    - method:
+          id: M1
+          entry: N1
+          exit: N4
+          name: cw
+          type: boolean
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: int[]
+                      - name: b
+                        type: int[]
+                      - name: c
+                        type: int[]
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int p = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]);
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p < 0;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: boolean
+                  next: null
+    - method:
+          id: M2
+          entry: N1
+          exit: N4
+          name: ccw
+          type: boolean
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: a
+                        type: int[]
+                      - name: b
+                        type: int[]
+                      - name: c
+                        type: int[]
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int p = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1])
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - _return_value = p > 0;
+                  next: N4
+              N4:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: boolean
+                  next: null
+    - method:
+          id: M3
+          entry: N1
+          exit: N7
+          name: convexHull
+          type: int[][]
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: v
+                        type: int[][]
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - Arrays.sort(v, (a, b) -> a[0] - b[0])
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - int n = v.length
+                  next: N4
+              N4:
+                  type: conditional
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: n <= 3
+                            onTrue: N5
+                            onFalse: N6
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = v;
+                  next: N7
+              N6:
+                  type: block
+                  statements:
+                      - int[] p1 = v[0]
+                      - int[] p2 = v[n - 1]
+                  next: N8
+              N7:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: int[][]
+                  next: null
+              N8:
+                  type: block
+                  statements:
+                      - List<int[]> up = new ArrayList<int[]>()
+                      - List<int[]> down = new ArrayList<int[]>()
+                  next: N9
+              N9:
+                  type: block
+                  statements:
+                      - up.add(p1)
+                      - down.add(p1)
+                  next: N10
+              N10:
+                  type: loop
+                  iteratorStart: int i = 1
+                  iteratorUpdate: null
+                  startPredicate: N10a
+                  predicates:
+                      - predicate:
+                            ID: N10a
+                            statement: i < n
+                            onTrue: N11
+                            onFalse: N12
+              N11:
+                  type: conditional
+                  startPredicate: N11a
+                  predicates:
+                      - predicate:
+                            ID: N11a
+                            statement: i == n - 1 || !ccw(p1, v[i], p2)
+                            onTrue: N13
+                            onFalse: N14
+              N12:
+                  type: loop
+                  iteratorStart: int i = down.size() - 2
+                  iteratorUpdate: null
+                  startPredicate: N12a
+                  predicates:
+                      - predicate:
+                            ID: N12a
+                            statement: i >= 0
+                            onTrue: N15
+                            onFalse: N16
+              N13:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N13a
+                  predicates:
+                      - predicate:
+                            ID: N13a
+                            statement: up.size() > 1 && ccw(up.get(up.size() - 2), up.get(up.size() - 1), v[i])
+                            onTrue: N18
+                            onFalse: N19
+              N14:
+                  type: conditional
+                  startPredicate: N14a
+                  predicates:
+                      - predicate:
+                            ID: N14a
+                            statement: i == n - 1 || !cw(p1, v[i], p2)
+                            onTrue: N20
+                            onFalse: N21
+              N15:
+                  type: block
+                  statements:
+                      - up.add(down.get(i))
+                  next: N17
+              N16:
+                  type: block
+                  statements:
+                      - _return_value = up.toArray(new int[0][]);
+                  next: N7
+              N17:
+                  type: block
+                  statements:
+                      - i--
+                  next: N12
+              N18:
+                  type: block
+                  statements:
+                      - up.remove(up.size() - 1)
+                  next: N13
+              N19:
+                  type: block
+                  statements:
+                      - up.add(v[i])
+                  next: N14
+              N20:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N20a
+                  predicates:
+                      - predicate:
+                            ID: N20a
+                            statement: down.size() > 1 && cw(down.get(down.size() - 2), down.get(down.size() - 1), v[i])
+                            onTrue: N22
+                            onFalse: N23
+              N21:
+                  type: block
+                  statements:
+                      - i++
+                  next: N10
+              N22:
+                  type: block
+                  statements:
+                      - down.remove(down.size() - 1)
+                  next: N20
+              N23:
+                  type: block
+                  statements:
+                      - down.add(v[i])
+                  next: N21
+    - method:
+          id: M4
+          entry: N1
+          exit: N10
+          name: isInside
+          type: boolean
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: points
+                        type: int[][]
+                      - name: query
+                        type: int[]
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int[][] points1 = new int[points.length + 1][];
+                  next: N3
+              N3:
+                  type: loop
+                  iteratorStart: int i = 0
+                  iteratorUpdate: null
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: i < points.length
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: block
+                  statements:
+                      - points1[i] = points[i]
+                  next: N6
+              N5:
+                  type: block
+                  statements:
+                      - points1[points.length] = query;
+                      - points = convexHull(points);
+                  next: N7
+              N6:
+                  type: block
+                  statements:
+                      - i++
+                  next: N3
+              N7:
+                  type: loop
+                  iteratorStart: null
+                  iteratorUpdate: null
+                  startPredicate: N7a
+                  predicates:
+                      - predicate:
+                            ID: N7a
+                            statement: "x : points"
+                            onTrue: N8
+                            onFalse: N9
+              N8:
+                  type: conditional
+                  startPredicate: N8a
+                  predicates:
+                      - predicate:
+                            ID: N8a
+                            statement: Arrays.equals(x, query)
+                            onTrue: N11
+                            onFalse: N7
+              N9:
+                  type: block
+                  statements:
+                      - _return_value = true;
+                  next: N10
+              N10:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: boolean
+                  next: null
+              N11:
+                  type: block
+                  statements:
+                      - _return_value = false;
+                  next: N10
+    - method:
+          id: M5
+          entry: N1
+          exit: N6
+          name: main
+          type: void
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: args
+                        type: String[]
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int n = 7;
+                      - |-
+                        int[][] points
+                                    = { new int[] { 1, 1 }, new int[] { 2, 1 },
+                                        new int[] { 3, 1 }, new int[] { 4, 1 },
+                                        new int[] { 4, 2 }, new int[] { 4, 3 },
+                                        new int[] { 4, 4 } };
+                      - int[] query = { 3, 2 };
+                  next: N3
+              N3:
+                  type: conditional
+                  startPredicate: N3a
+                  predicates:
+                      - predicate:
+                            ID: N3a
+                            statement: isInside(points, query)
+                            onTrue: N4
+                            onFalse: N5
+              N4:
+                  type: block
+                  statements:
+                      - System.out.println("YES");
+                  next: N6
+              N5:
+                  type: block
+                  statements:
+                      - System.out.println("NO");
+                  next: N6
+              N6:
+                  type: exit
+                  return: []
+                  next: null
