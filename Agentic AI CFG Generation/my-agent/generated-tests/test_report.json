@@ -276,21 +276,23 @@
   },
   "coverageAfter": {
     "branchCoverage": {
-      "covered": 16,
+      "covered": 2,
       "total": 28,
-      "percent": 57.14
+      "percent": 7.14
     },
     "statementCoverage": {
-      "covered": 8,
+      "covered": 3,
       "total": 15,
-      "percent": 53.33
+      "percent": 20
     },
     "coveredObjectiveIds": [
       "M1:N2:statement",
       "M2:N2a:false",
       "M2:N2a:true",
       "M2:N3:statement",
-      "M2:N4:statement",
+      "M2:N4:statement"
+    ],
+    "uncoveredObjectiveIds": [
       "M3:N2a:false",
       "M3:N2a:true",
       "M3:N4a:false",
@@ -309,9 +311,7 @@
       "M6:N4a:false",
       "M6:N4a:true",
       "M6:N2:statement",
-      "M6:N7:statement"
-    ],
-    "uncoveredObjectiveIds": [
+      "M6:N7:statement",
       "M7:N3a:false",
       "M7:N3a:true",
       "M7:N4a:false",
@@ -382,58 +382,59 @@
         "methodId": "M3",
         "methodName": "method003",
         "branchCoverage": {
-          "covered": 4,
+          "covered": 0,
           "total": 4,
-          "percent": 100
+          "percent": 0
         },
         "statementCoverage": {
           "covered": 0,
           "total": 0,
           "percent": 100
         },
-        "coveredObjectiveIds": [
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
           "M3:N2a:false",
           "M3:N2a:true",
           "M3:N4a:false",
           "M3:N4a:true"
         ],
-        "uncoveredObjectiveIds": [],
         "unattributableObjectiveIds": []
       },
       {
         "methodId": "M4",
         "methodName": "method004",
         "branchCoverage": {
-          "covered": 2,
+          "covered": 0,
           "total": 2,
-          "percent": 100
+          "percent": 0
         },
         "statementCoverage": {
           "covered": 0,
           "total": 0,
           "percent": 100
         },
-        "coveredObjectiveIds": [
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
           "M4:N2a:false",
           "M4:N2a:true"
         ],
-        "uncoveredObjectiveIds": [],
         "unattributableObjectiveIds": []
       },
       {
         "methodId": "M5",
         "methodName": "method005",
         "branchCoverage": {
-          "covered": 4,
+          "covered": 0,
           "total": 4,
-          "percent": 100
+          "percent": 0
         },
         "statementCoverage": {
-          "covered": 3,
+          "covered": 0,
           "total": 3,
-          "percent": 100
+          "percent": 0
         },
-        "coveredObjectiveIds": [
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
           "M5:N3a:false",
           "M5:N3a:true",
           "M5:N6a:false",
@@ -442,23 +443,23 @@
           "M5:N4:statement",
           "M5:N8:statement"
         ],
-        "uncoveredObjectiveIds": [],
         "unattributableObjectiveIds": []
       },
       {
         "methodId": "M6",
         "methodName": "method006",
         "branchCoverage": {
-          "covered": 4,
+          "covered": 0,
           "total": 4,
-          "percent": 100
+          "percent": 0
         },
         "statementCoverage": {
-          "covered": 2,
+          "covered": 0,
           "total": 2,
-          "percent": 100
+          "percent": 0
         },
-        "coveredObjectiveIds": [
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
           "M6:N3a:false",
           "M6:N3a:true",
           "M6:N4a:false",
@@ -466,7 +467,6 @@
           "M6:N2:statement",
           "M6:N7:statement"
         ],
-        "uncoveredObjectiveIds": [],
         "unattributableObjectiveIds": []
       },
       {
@@ -548,30 +548,21 @@
       }
     ]
   },
-  "acceptedCandidateCount": 12,
+  "acceptedCandidateCount": 3,
   "rejectedCandidateCount": 0,
   "acceptedTestNames": [
-    "test_method001_path_N2_statement",
+    "test_method001_objective_M1_N2_statement",
     "test_method002_negative_sum",
-    "test_method002_positive_sum",
-    "test_method003_second_true_path",
-    "test_method003_first_true_path",
-    "test_method003_both_false_path",
-    "test_method004_branch_N2a_false",
-    "test_method004_branch_N2a_true",
-    "test_method005_loop_false_branch",
-    "test_method005_loop_enter_and_mod5_false",
-    "test_method006_branch_N3a_false",
-    "test_method006_branch_N3a_true_loop_completes"
+    "test_method002_positive_sum"
   ],
   "iterationHistory": [
     {
       "round": 1,
       "targetObjectiveId": "M1:N2:statement",
       "targetMethodName": "method001",
-      "candidateName": "test_method001_path_N2_statement",
+      "candidateName": "test_method001_objective_M1_N2_statement",
       "accepted": true,
-      "reason": "Accepted test_method001_path_N2_statement: covered target objective M1:N2:statement."
+      "reason": "Accepted test_method001_objective_M1_N2_statement: covered target objective M1:N2:statement."
     },
     {
       "round": 2,
@@ -588,78 +579,6 @@
       "candidateName": "test_method002_positive_sum",
       "accepted": true,
       "reason": "Accepted test_method002_positive_sum: covered target objective M2:N2a:true."
-    },
-    {
-      "round": 4,
-      "targetObjectiveId": "M3:N2a:false",
-      "targetMethodName": "method003",
-      "candidateName": "test_method003_second_true_path",
-      "accepted": true,
-      "reason": "Accepted test_method003_second_true_path: covered target objective M3:N2a:false."
-    },
-    {
-      "round": 5,
-      "targetObjectiveId": "M3:N2a:true",
-      "targetMethodName": "method003",
-      "candidateName": "test_method003_first_true_path",
-      "accepted": true,
-      "reason": "Accepted test_method003_first_true_path: covered target objective M3:N2a:true."
-    },
-    {
-      "round": 6,
-      "targetObjectiveId": "M3:N4a:false",
-      "targetMethodName": "method003",
-      "candidateName": "test_method003_both_false_path",
-      "accepted": true,
-      "reason": "Accepted test_method003_both_false_path: covered target objective M3:N4a:false."
-    },
-    {
-      "round": 7,
-      "targetObjectiveId": "M4:N2a:false",
-      "targetMethodName": "method004",
-      "candidateName": "test_method004_branch_N2a_false",
-      "accepted": true,
-      "reason": "Accepted test_method004_branch_N2a_false: covered target objective M4:N2a:false."
-    },
-    {
-      "round": 8,
-      "targetObjectiveId": "M4:N2a:true",
-      "targetMethodName": "method004",
-      "candidateName": "test_method004_branch_N2a_true",
-      "accepted": true,
-      "reason": "Accepted test_method004_branch_N2a_true: covered target objective M4:N2a:true."
-    },
-    {
-      "round": 9,
-      "targetObjectiveId": "M5:N3a:false",
-      "targetMethodName": "method005",
-      "candidateName": "test_method005_loop_false_branch",
-      "accepted": true,
-      "reason": "Accepted test_method005_loop_false_branch: covered target objective M5:N3a:false."
-    },
-    {
-      "round": 10,
-      "targetObjectiveId": "M5:N3a:true",
-      "targetMethodName": "method005",
-      "candidateName": "test_method005_loop_enter_and_mod5_false",
-      "accepted": true,
-      "reason": "Accepted test_method005_loop_enter_and_mod5_false: covered target objective M5:N3a:true."
-    },
-    {
-      "round": 11,
-      "targetObjectiveId": "M6:N3a:false",
-      "targetMethodName": "method006",
-      "candidateName": "test_method006_branch_N3a_false",
-      "accepted": true,
-      "reason": "Accepted test_method006_branch_N3a_false: covered target objective M6:N3a:false."
-    },
-    {
-      "round": 12,
-      "targetObjectiveId": "M6:N3a:true",
-      "targetMethodName": "method006",
-      "candidateName": "test_method006_branch_N3a_true_loop_completes",
-      "accepted": true,
-      "reason": "Accepted test_method006_branch_N3a_true_loop_completes: covered target objective M6:N3a:true."
     }
   ],
   "failedCandidateReasons": []

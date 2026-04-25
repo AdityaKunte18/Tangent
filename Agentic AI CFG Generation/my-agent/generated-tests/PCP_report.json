@@ -1,0 +1,368 @@
+{
+  "sourcePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Real World Sampling/Point Lies Inside Given N points of a Convex Polygon/PCP.py",
+  "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/PCP_generated_test.py",
+  "coverageBefore": {
+    "branchCoverage": {
+      "covered": 0,
+      "total": 18,
+      "percent": 0
+    },
+    "statementCoverage": {
+      "covered": 0,
+      "total": 14,
+      "percent": 0
+    },
+    "coveredObjectiveIds": [],
+    "uncoveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2:statement",
+      "M3:N10a:false",
+      "M3:N10a:true",
+      "M3:N11a:false",
+      "M3:N11a:true",
+      "M3:N12a:false",
+      "M3:N12a:true",
+      "M3:N13a:false",
+      "M3:N13a:true",
+      "M3:N14a:false",
+      "M3:N14a:true",
+      "M3:N20a:false",
+      "M3:N20a:true",
+      "M3:N4a:false",
+      "M3:N4a:true",
+      "M3:N15:statement",
+      "M3:N16:statement",
+      "M3:N18:statement",
+      "M3:N19:statement",
+      "M3:N2:statement",
+      "M3:N21:statement",
+      "M3:N22:statement",
+      "M3:N3:statement",
+      "M3:N6:statement",
+      "M3:N8:statement",
+      "M3:N9:statement",
+      "M4:N3a:false",
+      "M4:N3a:true",
+      "M4:N4a:false",
+      "M4:N4a:true",
+      "M4:N2:statement"
+    ],
+    "unattributableObjectiveIds": [],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "cw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "ccw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "convexHull",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 14,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 11,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M3:N10a:false",
+          "M3:N10a:true",
+          "M3:N11a:false",
+          "M3:N11a:true",
+          "M3:N12a:false",
+          "M3:N12a:true",
+          "M3:N13a:false",
+          "M3:N13a:true",
+          "M3:N14a:false",
+          "M3:N14a:true",
+          "M3:N20a:false",
+          "M3:N20a:true",
+          "M3:N4a:false",
+          "M3:N4a:true",
+          "M3:N15:statement",
+          "M3:N16:statement",
+          "M3:N18:statement",
+          "M3:N19:statement",
+          "M3:N2:statement",
+          "M3:N21:statement",
+          "M3:N22:statement",
+          "M3:N3:statement",
+          "M3:N6:statement",
+          "M3:N8:statement",
+          "M3:N9:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "isInside",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M4:N3a:false",
+          "M4:N3a:true",
+          "M4:N4a:false",
+          "M4:N4a:true",
+          "M4:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "coverageAfter": {
+    "branchCoverage": {
+      "covered": 15,
+      "total": 18,
+      "percent": 83.33
+    },
+    "statementCoverage": {
+      "covered": 13,
+      "total": 14,
+      "percent": 92.86
+    },
+    "coveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2:statement",
+      "M3:N10a:false",
+      "M3:N10a:true",
+      "M3:N11a:false",
+      "M3:N11a:true",
+      "M3:N12a:false",
+      "M3:N12a:true",
+      "M3:N13a:false",
+      "M3:N13a:true",
+      "M3:N14a:false",
+      "M3:N14a:true",
+      "M3:N20a:false",
+      "M3:N4a:false",
+      "M3:N15:statement",
+      "M3:N16:statement",
+      "M3:N18:statement",
+      "M3:N19:statement",
+      "M3:N2:statement",
+      "M3:N22:statement",
+      "M3:N3:statement",
+      "M3:N6:statement",
+      "M3:N8:statement",
+      "M3:N9:statement",
+      "M4:N3a:false",
+      "M4:N3a:true",
+      "M4:N4a:false",
+      "M4:N2:statement"
+    ],
+    "uncoveredObjectiveIds": [
+      "M3:N20a:true",
+      "M3:N4a:true",
+      "M3:N21:statement",
+      "M4:N4a:true"
+    ],
+    "unattributableObjectiveIds": [],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "cw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "ccw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "convexHull",
+        "branchCoverage": {
+          "covered": 12,
+          "total": 14,
+          "percent": 85.71
+        },
+        "statementCoverage": {
+          "covered": 10,
+          "total": 11,
+          "percent": 90.91
+        },
+        "coveredObjectiveIds": [
+          "M3:N10a:false",
+          "M3:N10a:true",
+          "M3:N11a:false",
+          "M3:N11a:true",
+          "M3:N12a:false",
+          "M3:N12a:true",
+          "M3:N13a:false",
+          "M3:N13a:true",
+          "M3:N14a:false",
+          "M3:N14a:true",
+          "M3:N20a:false",
+          "M3:N4a:false",
+          "M3:N15:statement",
+          "M3:N16:statement",
+          "M3:N18:statement",
+          "M3:N19:statement",
+          "M3:N2:statement",
+          "M3:N22:statement",
+          "M3:N3:statement",
+          "M3:N6:statement",
+          "M3:N8:statement",
+          "M3:N9:statement"
+        ],
+        "uncoveredObjectiveIds": [
+          "M3:N20a:true",
+          "M3:N4a:true",
+          "M3:N21:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "isInside",
+        "branchCoverage": {
+          "covered": 3,
+          "total": 4,
+          "percent": 75
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M4:N3a:false",
+          "M4:N3a:true",
+          "M4:N4a:false",
+          "M4:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [
+          "M4:N4a:true"
+        ],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "acceptedCandidateCount": 2,
+  "rejectedCandidateCount": 3,
+  "acceptedTestNames": [
+    "test_cw_statement_N2",
+    "test_convexHull_M3_N13a_true"
+  ],
+  "iterationHistory": [
+    {
+      "round": 1,
+      "targetObjectiveId": "M1:N2:statement",
+      "targetMethodName": "cw",
+      "candidateName": "test_cw_statement_N2",
+      "accepted": true,
+      "reason": "Accepted test_cw_statement_N2: covered target objective M1:N2:statement."
+    },
+    {
+      "round": 2,
+      "targetObjectiveId": "M3:N13a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_M3_N13a_true",
+      "accepted": true,
+      "reason": "Accepted test_convexHull_M3_N13a_true: covered target objective M3:N13a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_N20a_true",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_N20a_true: test/coverage execution failed (1)."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_N20a_true",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_N20a_true: test passed but did not improve coverage or cover M3:N20a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_N20a_unreachable_path",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_N20a_unreachable_path: test passed but did not improve coverage or cover M3:N20a:true."
+    }
+  ],
+  "failedCandidateReasons": [
+    "Rejected test_convexHull_N20a_true: test/coverage execution failed (1).",
+    "Rejected test_convexHull_N20a_true: test passed but did not improve coverage or cover M3:N20a:true.",
+    "Rejected test_convexHull_N20a_unreachable_path: test passed but did not improve coverage or cover M3:N20a:true."
+  ]
+}
