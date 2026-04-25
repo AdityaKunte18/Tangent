@@ -4,7 +4,7 @@ methods:
           entry: N1
           exit: N3
           name: method001
-          type: None
+          type: void
           nodes:
               N1:
                   type: entry
@@ -13,9 +13,9 @@ methods:
               N2:
                   type: block
                   statements:
-                      - x = 1
-                      - y = 2
-                      - print(x + y)
+                      - int x = 1;
+                      - int y = 2;
+                      - cout << x + y << endl;
                   next: N3
               N3:
                   type: exit
@@ -26,15 +26,15 @@ methods:
           entry: N1
           exit: N7
           name: method002
-          type: boolean
+          type: int
           nodes:
               N1:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: conditional
@@ -48,28 +48,28 @@ methods:
               N3:
                   type: block
                   statements:
-                      - print("positive")
+                      - cout << "positive" << endl;
                   next: N5
               N4:
                   type: block
                   statements:
-                      - print("negative")
+                      - cout << "negative" << endl;
                   next: N6
               N5:
                   type: block
                   statements:
-                      - _return_value = True;
+                      - _return_value = 1;
                   next: N7
               N6:
                   type: block
                   statements:
-                      - _return_value = False;
+                      - _return_value = 0;
                   next: N7
               N7:
                   type: exit
                   return:
                       - name: _return_value
-                        type: boolean
+                        type: int
                   next: null
     - method:
           id: M3
@@ -82,9 +82,9 @@ methods:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: conditional
@@ -92,7 +92,7 @@ methods:
                   predicates:
                       - predicate:
                             ID: N2a
-                            statement: x > 0 or y < 0
+                            statement: x > 0 || y < 0
                             onTrue: N3
                             onFalse: N4
               N3:
@@ -106,7 +106,7 @@ methods:
                   predicates:
                       - predicate:
                             ID: N4a
-                            statement: x < 0 and y > 0
+                            statement: x < 0 && y > 0
                             onTrue: N6
                             onFalse: N7
               N5:
@@ -136,9 +136,9 @@ methods:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: conditional
@@ -146,13 +146,13 @@ methods:
                   predicates:
                       - predicate:
                             ID: N2a
-                            statement: not (x > y) and (x + y < 0 or x * y <= 0)
+                            statement: "!(x > y) && (x + y < 0 || x*y <= 0)"
                             onTrue: N3
                             onFalse: N4
               N3:
                   type: block
                   statements:
-                      - _return_value = f"The values of x and y are {x} and {y}";
+                      - _return_value = format("The values of x and y are {} and {}\n", x, y);
                   next: N5
               N4:
                   type: block
@@ -170,20 +170,20 @@ methods:
           entry: N1
           exit: N7
           name: method005
-          type: unknown
+          type: int
           nodes:
               N1:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: block
                   statements:
-                      - loopCounter = 0
+                      - int loopCounter = 0;
                   next: N3
               N3:
                   type: loop
@@ -193,13 +193,13 @@ methods:
                   predicates:
                       - predicate:
                             ID: N3a
-                            statement: i in range(0, y, x)
+                            statement: i < y
                             onTrue: N4
                             onFalse: N5
               N4:
                   type: block
                   statements:
-                      - loopCounter += 1
+                      - loopCounter++;
                   next: N6
               N5:
                   type: block
@@ -214,37 +214,42 @@ methods:
                             ID: N6a
                             statement: loopCounter % 5
                             onTrue: N8
-                            onFalse: N3
+                            onFalse: N9
               N7:
                   type: exit
                   return:
                       - name: _return_value
-                        type: unknown
+                        type: int
                   next: null
               N8:
                   type: block
                   statements:
-                      - loopCounter += 2
+                      - loopCounter += 2;
+                  next: N9
+              N9:
+                  type: block
+                  statements:
+                      - i += x
                   next: N3
     - method:
           id: M6
           entry: N1
           exit: N6
           name: method006
-          type: unknown
+          type: int
           nodes:
               N1:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: block
                   statements:
-                      - loopCounter = 0
+                      - int loopCounter = 0;
                   next: N3
               N3:
                   type: conditional
@@ -252,7 +257,7 @@ methods:
                   predicates:
                       - predicate:
                             ID: N3a
-                            statement: x > 0 and y > 0
+                            statement: x > 0 && y > 0
                             onTrue: N4
                             onFalse: N5
               N4:
@@ -275,12 +280,12 @@ methods:
                   type: exit
                   return:
                       - name: _return_value
-                        type: unknown
+                        type: int
                   next: null
               N7:
                   type: block
                   statements:
-                      - loopCounter += 1
+                      - loopCounter++;
                   next: N4
               N8:
                   type: block
@@ -292,32 +297,110 @@ methods:
           entry: N1
           exit: N6
           name: method007
-          type: unknown
+          type: int
           nodes:
               N1:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: block
                   statements:
-                      - loopCounter = 0
+                      - int loopCounter = 0;
                   next: N3
               N3:
                   type: loop
-                  iteratorStart: null
+                  iteratorStart: int i = 0
                   iteratorUpdate: null
                   startPredicate: N3a
                   predicates:
                       - predicate:
                             ID: N3a
-                            statement: i in range(0, y, 1)
+                            statement: i < y
                             onTrue: N4
                             onFalse: N5
+              N4:
+                  type: loop
+                  iteratorStart: int j = x
+                  iteratorUpdate: null
+                  startPredicate: N4a
+                  predicates:
+                      - predicate:
+                            ID: N4a
+                            statement: j >= 0
+                            onTrue: N7
+                            onFalse: N8
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = loopCounter;
+                  next: N6
+              N6:
+                  type: exit
+                  return:
+                      - name: _return_value
+                        type: int
+                  next: null
+              N7:
+                  type: conditional
+                  startPredicate: N7a
+                  predicates:
+                      - predicate:
+                            ID: N7a
+                            statement: j == i
+                            onTrue: N9
+                            onFalse: N10
+              N8:
+                  type: block
+                  statements:
+                      - i ++
+                  next: N3
+              N9:
+                  type: block
+                  statements:
+                      - loopCounter += 2;
+                  next: N11
+              N10:
+                  type: block
+                  statements:
+                      - loopCounter += 3;
+                  next: N11
+              N11:
+                  type: block
+                  statements:
+                      - j --
+                  next: N4
+    - method:
+          id: M8
+          entry: N1
+          exit: N6
+          name: method008
+          type: int
+          nodes:
+              N1:
+                  type: entry
+                  arguments:
+                      - name: x
+                        type: int
+                      - name: y
+                        type: int
+                  next: N2
+              N2:
+                  type: block
+                  statements:
+                      - int loopCounter = 0;
+                      - int other = 0;
+                  next: N3
+              N3:
+                  type: block
+                  statements:
+                      - loopCounter ++;
+                      - other += (loopCounter + y);
+                  next: N4
               N4:
                   type: loop
                   iteratorStart: null
@@ -326,119 +409,39 @@ methods:
                   predicates:
                       - predicate:
                             ID: N4a
-                            statement: j in range(x, 0, -1)
-                            onTrue: N7
-                            onFalse: N3
-              N5:
-                  type: block
-                  statements:
-                      - _return_value = loopCounter;
-                  next: N6
-              N6:
-                  type: exit
-                  return:
-                      - name: _return_value
-                        type: unknown
-                  next: null
-              N7:
-                  type: conditional
-                  startPredicate: N7a
-                  predicates:
-                      - predicate:
-                            ID: N7a
-                            statement: (j == i)
-                            onTrue: N8
-                            onFalse: N9
-              N8:
-                  type: block
-                  statements:
-                      - loopCounter += 2
-                  next: N4
-              N9:
-                  type: block
-                  statements:
-                      - loopCounter += 3
-                  next: N4
-    - method:
-          id: M8
-          entry: N1
-          exit: N7
-          name: method008
-          type: unknown
-          nodes:
-              N1:
-                  type: entry
-                  arguments:
-                      - name: x
-                        type: unknown
-                      - name: y
-                        type: unknown
-                  next: N2
-              N2:
-                  type: block
-                  statements:
-                      - loopCounter = 0
-                      - other = 0
-                  next: N3
-              N3:
-                  type: loop
-                  iteratorStart: null
-                  iteratorUpdate: null
-                  startPredicate: N3a
-                  predicates:
-                      - predicate:
-                            ID: N3a
-                            statement: "True"
-                            onTrue: N4
-                            onFalse: N5
-              N4:
-                  type: block
-                  statements:
-                      - loopCounter += 1
-                      - other += (loopCounter + y)
-                  next: N6
-              N5:
-                  type: block
-                  statements:
-                      - _return_value = loopCounter;
-                  next: N7
-              N6:
-                  type: conditional
-                  startPredicate: N6a
-                  predicates:
-                      - predicate:
-                            ID: N6a
                             statement: loopCounter % x == other
-                            onTrue: N8
-                            onFalse: N3
-              N7:
+                            onTrue: N3
+                            onFalse: N5
+              N5:
+                  type: block
+                  statements:
+                      - _return_value = loopCounter;
+                  next: N6
+              N6:
                   type: exit
                   return:
                       - name: _return_value
-                        type: unknown
+                        type: int
                   next: null
-              N8:
-                  type: jump
-                  next: N5
     - method:
           id: M9
           entry: N1
           exit: N7
           name: method009
-          type: unknown
+          type: int
           nodes:
               N1:
                   type: entry
                   arguments:
                       - name: x
-                        type: unknown
+                        type: int
                       - name: y
-                        type: unknown
+                        type: int
                   next: N2
               N2:
                   type: block
                   statements:
-                      - loopCounter = 0
+                      - int loopCounter = 0;
                   next: N3
               N3:
                   type: loop
@@ -448,13 +451,13 @@ methods:
                   predicates:
                       - predicate:
                             ID: N3a
-                            statement: "True"
+                            statement: "true"
                             onTrue: N4
                             onFalse: N5
               N4:
                   type: block
                   statements:
-                      - loopCounter += 1
+                      - loopCounter++;
                   next: N6
               N5:
                   type: block
@@ -467,14 +470,14 @@ methods:
                   predicates:
                       - predicate:
                             ID: N6a
-                            statement: (loopCounter + x == y)
+                            statement: loopCounter + x == y
                             onTrue: N8
                             onFalse: N3
               N7:
                   type: exit
                   return:
                       - name: _return_value
-                        type: unknown
+                        type: int
                   next: null
               N8:
                   type: jump
