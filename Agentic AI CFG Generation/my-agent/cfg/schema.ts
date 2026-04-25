@@ -10,6 +10,13 @@ export const variableSchema = z.object({
     type: z.string().trim().min(1)
 })
 
+export const sourceSpanSchema = z.object({
+    startLine: z.number().int().positive(),
+    endLine: z.number().int().positive()
+}).refine((value) => value.endLine >= value.startLine, {
+    message: 'sourceSpan.endLine must be greater than or equal to sourceSpan.startLine.'
+})
+
 export const discoveredMethodLocationSchema = z.object({
     name: z.string().trim().min(1),
     returnType: z.string().trim().min(1),
@@ -27,7 +34,8 @@ export const cfgPredicateSchema = z.object({
     id: z.string().trim().min(1),
     statement: z.string().trim().min(1),
     onTrue: z.string().trim().min(1).nullable(),
-    onFalse: z.string().trim().min(1).nullable()
+    onFalse: z.string().trim().min(1).nullable(),
+    sourceSpan: sourceSpanSchema.optional()
 })
 
 export const cfgNodeSchema = z.object({
@@ -40,7 +48,8 @@ export const cfgNodeSchema = z.object({
     iteratorStart: z.string().nullable().optional(),
     iteratorUpdate: z.string().nullable().optional(),
     returnValues: z.array(variableSchema).optional(),
-    jumpKind: z.enum(['break', 'continue']).optional()
+    jumpKind: z.enum(['break', 'continue']).optional(),
+    sourceSpan: sourceSpanSchema.optional()
 })
 
 export const cfgDraftSchema = z.object({
@@ -145,6 +154,8 @@ export type CfgPredicate = z.infer<typeof cfgPredicateSchema>
 export type CfgNodeDraft = z.infer<typeof cfgNodeSchema>
 export type CfgMethodDraft = z.infer<typeof cfgDraftSchema>
 
+export type SourceSpan = z.infer<typeof sourceSpanSchema>
+
 export interface DiscoveredMethod extends DiscoveredMethodLocation {
     source: string
 }
@@ -155,6 +166,7 @@ export interface FinalPredicate {
         statement: string
         onTrue: string | null
         onFalse: string | null
+        sourceSpan?: SourceSpan
     }
 }
 
@@ -162,18 +174,21 @@ export interface FinalEntryNode {
     type: 'entry'
     arguments: Parameter[]
     next: string | null
+    sourceSpan?: SourceSpan
 }
 
 export interface FinalBlockNode {
     type: 'block'
     statements: string[]
     next: string | null
+    sourceSpan?: SourceSpan
 }
 
 export interface FinalConditionalNode {
     type: 'conditional'
     startPredicate: string
     predicates: FinalPredicate[]
+    sourceSpan?: SourceSpan
 }
 
 export interface FinalLoopNode {
@@ -182,17 +197,20 @@ export interface FinalLoopNode {
     iteratorUpdate: string | null
     startPredicate: string
     predicates: FinalPredicate[]
+    sourceSpan?: SourceSpan
 }
 
 export interface FinalJumpNode {
     type: 'jump'
     next: string | null
+    sourceSpan?: SourceSpan
 }
 
 export interface FinalExitNode {
     type: 'exit'
     return: Variable[]
     next: null
+    sourceSpan?: SourceSpan
 }
 
 export type FinalNode =
@@ -219,3 +237,82 @@ export interface FinalMethodEnvelope {
 export interface FinalCfgDocument {
     methods: FinalMethodEnvelope[]
 }
+
+export const finalPredicateEnvelopeSchema = z.object({
+    predicate: z.object({
+        ID: z.string().trim().min(1),
+        statement: z.string().trim().min(1),
+        onTrue: z.string().trim().min(1).nullable(),
+        onFalse: z.string().trim().min(1).nullable(),
+        sourceSpan: sourceSpanSchema.optional()
+    })
+})
+
+export const finalEntryNodeSchema = z.object({
+    type: z.literal('entry'),
+    arguments: z.array(parameterSchema),
+    next: z.string().trim().min(1).nullable(),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalBlockNodeSchema = z.object({
+    type: z.literal('block'),
+    statements: z.array(z.string()),
+    next: z.string().trim().min(1).nullable(),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalConditionalNodeSchema = z.object({
+    type: z.literal('conditional'),
+    startPredicate: z.string().trim().min(1),
+    predicates: z.array(finalPredicateEnvelopeSchema),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalLoopNodeSchema = z.object({
+    type: z.literal('loop'),
+    iteratorStart: z.string().nullable(),
+    iteratorUpdate: z.string().nullable(),
+    startPredicate: z.string().trim().min(1),
+    predicates: z.array(finalPredicateEnvelopeSchema),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalJumpNodeSchema = z.object({
+    type: z.literal('jump'),
+    next: z.string().trim().min(1).nullable(),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalExitNodeSchema = z.object({
+    type: z.literal('exit'),
+    return: z.array(variableSchema),
+    next: z.null(),
+    sourceSpan: sourceSpanSchema.optional()
+})
+
+export const finalNodeSchema = z.discriminatedUnion('type', [
+    finalEntryNodeSchema,
+    finalBlockNodeSchema,
+    finalConditionalNodeSchema,
+    finalLoopNodeSchema,
+    finalJumpNodeSchema,
+    finalExitNodeSchema
+])
+
+export const finalMethodSchema = z.object({
+    id: z.string().trim().min(1),
+    entry: z.string().trim().min(1),
+    exit: z.string().trim().min(1),
+    name: z.string().trim().min(1),
+    type: z.string().trim().min(1),
+    nodes: z.record(z.string().trim().min(1), finalNodeSchema)
+})
+
+export const finalMethodEnvelopeSchema = z.object({
+    method: finalMethodSchema
+})
+
+export const finalCfgDocumentSchema = z.object({
+    methods: z.array(finalMethodEnvelopeSchema)
+})

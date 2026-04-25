@@ -5,8 +5,10 @@ import {
     DiscoveredMethod,
     MethodPlan,
     MethodPlanLoopStep,
-    MethodPlanStep
+    MethodPlanStep,
+    SourceSpan
 } from './schema.js'
+import { SequentialSourceSpanFinder } from '../source-spans.js'
 
 interface LoopContext {
     breakTargetId: string
@@ -19,6 +21,7 @@ interface CompilerState {
     predicateCounter: number
     exitNodeId: string
     voidMethod: boolean
+    stepSpans: WeakMap<MethodPlanStep, SourceSpan | null>
 }
 
 function isVoidReturnType(returnType: string): boolean {
@@ -26,13 +29,14 @@ function isVoidReturnType(returnType: string): boolean {
     return normalized === 'void' || normalized === 'none'
 }
 
-function createCompilerState(method: DiscoveredMethod): CompilerState {
+function createCompilerState(method: DiscoveredMethod, plan: MethodPlan): CompilerState {
     return {
         nodes: [],
         nodeCounter: 0,
         predicateCounter: 0,
         exitNodeId: 'exit',
-        voidMethod: isVoidReturnType(method.returnType)
+        voidMethod: isVoidReturnType(method.returnType),
+        stepSpans: resolvePlanSourceSpans(method, plan)
     }
 }
 
@@ -56,13 +60,15 @@ function createPredicate(
     baseId: string,
     statement: string,
     onTrue: string | null,
-    onFalse: string | null
+    onFalse: string | null,
+    sourceSpan?: SourceSpan | null
 ): CfgPredicate {
     return {
         id: nextPredicateId(state, baseId),
         statement,
         onTrue,
-        onFalse
+        onFalse,
+        sourceSpan: sourceSpan ?? undefined
     }
 }
 
@@ -73,7 +79,8 @@ function normalizeAssignmentExpression(expression: string): string {
 
 function createReturnTarget(
     state: CompilerState,
-    expression: string | null
+    expression: string | null,
+    sourceSpan?: SourceSpan | null
 ): string {
     if (state.voidMethod) {
         return state.exitNodeId
@@ -87,8 +94,66 @@ function createReturnTarget(
         id: nextNodeId(state, 'return_value'),
         type: 'block',
         statements: [`_return_value = ${normalizeAssignmentExpression(expression)}`],
-        next: state.exitNodeId
+        next: state.exitNodeId,
+        sourceSpan: sourceSpan ?? undefined
     })
+}
+
+function combineSpans(spans: Array<SourceSpan | null | undefined>): SourceSpan | null {
+    const definedSpans = spans.filter((span): span is SourceSpan => span != null)
+    if (definedSpans.length === 0) {
+        return null
+    }
+
+    return {
+        startLine: Math.min(...definedSpans.map((span) => span.startLine)),
+        endLine: Math.max(...definedSpans.map((span) => span.endLine))
+    }
+}
+
+function resolvePlanSourceSpans(method: DiscoveredMethod, plan: MethodPlan): WeakMap<MethodPlanStep, SourceSpan | null> {
+    const stepSpans = new WeakMap<MethodPlanStep, SourceSpan | null>()
+    const finder = new SequentialSourceSpanFinder(method.source, method.startLine)
+
+    const walk = (steps: MethodPlanStep[]): void => {
+        for (const step of steps) {
+            switch (step.kind) {
+                case 'block': {
+                    const spans = step.statements.map((statement) => finder.findNext(statement))
+                    stepSpans.set(step, combineSpans(spans))
+                    break
+                }
+                case 'return':
+                    stepSpans.set(
+                        step,
+                        finder.findNext(step.expression?.trim().length ? `return ${step.expression}` : 'return')
+                    )
+                    break
+                case 'break':
+                    stepSpans.set(step, finder.findNext('break'))
+                    break
+                case 'continue':
+                    stepSpans.set(step, finder.findNext('continue'))
+                    break
+                case 'if':
+                    stepSpans.set(step, finder.findNext(step.condition))
+                    walk(step.then)
+                    walk(step.else)
+                    break
+                case 'loop':
+                    stepSpans.set(
+                        step,
+                        finder.findNext(step.condition)
+                        ?? (step.iteratorStart ? finder.findNext(step.iteratorStart) : null)
+                    )
+                    walk(step.body)
+                    break
+            }
+        }
+    }
+
+    walk(plan.body)
+    return stepSpans
 }
 
 function compileLoopStep(
@@ -97,6 +162,7 @@ function compileLoopStep(
     continuationId: string,
     loopStack: LoopContext[]
 ): string {
+    const sourceSpan = state.stepSpans.get(step) ?? null
     const loopId = nextNodeId(state, 'loop')
     const hasExplicitUpdate = Boolean(step.iteratorUpdate?.trim())
     const updateNodeId = hasExplicitUpdate
@@ -104,7 +170,8 @@ function compileLoopStep(
             id: nextNodeId(state, 'loop_update'),
             type: 'block',
             statements: [step.iteratorUpdate!.trim()],
-            next: loopId
+            next: loopId,
+            sourceSpan: sourceSpan ?? undefined
         })
         : null
 
@@ -131,11 +198,13 @@ function compileLoopStep(
                 'loop_predicate',
                 step.condition,
                 bodyEntryId,
-                continuationId
+                continuationId,
+                sourceSpan
             )
         ],
         iteratorStart: step.iteratorStart?.trim() || null,
-        iteratorUpdate: updateNodeId ? null : (step.iteratorUpdate?.trim() || null)
+        iteratorUpdate: updateNodeId ? null : (step.iteratorUpdate?.trim() || null),
+        sourceSpan: sourceSpan ?? undefined
     }
 
     addNode(state, loopNode)
@@ -159,10 +228,11 @@ function compileSingleStep(
                 id: nextNodeId(state, 'block'),
                 type: 'block',
                 statements: step.statements,
-                next: continuationId
+                next: continuationId,
+                sourceSpan: state.stepSpans.get(step) ?? undefined
             })
         case 'return':
-            return createReturnTarget(state, step.expression)
+            return createReturnTarget(state, step.expression, state.stepSpans.get(step))
         case 'break': {
             const loopContext = loopStack[loopStack.length - 1]
             if (!loopContext) {
@@ -173,7 +243,8 @@ function compileSingleStep(
                 id: nextNodeId(state, 'break_jump'),
                 type: 'jump',
                 jumpKind: 'break',
-                next: loopContext.breakTargetId
+                next: loopContext.breakTargetId,
+                sourceSpan: state.stepSpans.get(step) ?? undefined
             })
         }
         case 'continue': {
@@ -186,10 +257,12 @@ function compileSingleStep(
                 id: nextNodeId(state, 'continue_jump'),
                 type: 'jump',
                 jumpKind: 'continue',
-                next: loopContext.continueTargetId
+                next: loopContext.continueTargetId,
+                sourceSpan: state.stepSpans.get(step) ?? undefined
             })
         }
         case 'if': {
+            const sourceSpan = state.stepSpans.get(step) ?? null
             const thenEntryId = step.then.length > 0
                 ? compileStepSequence(state, step.then, continuationId, loopStack)
                 : continuationId
@@ -206,9 +279,11 @@ function compileSingleStep(
                         'conditional_predicate',
                         step.condition,
                         thenEntryId,
-                        elseEntryId
+                        elseEntryId,
+                        sourceSpan
                     )
-                ]
+                ],
+                sourceSpan: sourceSpan ?? undefined
             })
         }
         case 'loop':
@@ -237,7 +312,7 @@ function compileStepSequence(
 }
 
 export function compileMethodPlan(method: DiscoveredMethod, plan: MethodPlan): CfgMethodDraft {
-    const state = createCompilerState(method)
+    const state = createCompilerState(method, plan)
     const exitNode: CfgNodeDraft = {
         id: state.exitNodeId,
         type: 'exit',
@@ -257,7 +332,11 @@ export function compileMethodPlan(method: DiscoveredMethod, plan: MethodPlan): C
         id: 'entry',
         type: 'entry',
         arguments: method.parameters,
-        next: bodyEntryId
+        next: bodyEntryId,
+        sourceSpan: {
+            startLine: method.startLine,
+            endLine: method.startLine
+        }
     })
 
     return {

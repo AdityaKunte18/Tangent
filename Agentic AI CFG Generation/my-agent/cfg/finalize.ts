@@ -168,26 +168,30 @@ export function finalizeMethodDraft(method: CfgMethodDraft, methodIndex: number)
                 finalNodes[finalNodeId] = {
                     type: 'entry',
                     arguments: node.arguments ?? [],
-                    next: mapRef(node.next, nodeIdMap, predicateIdMap)
+                    next: mapRef(node.next, nodeIdMap, predicateIdMap),
+                    sourceSpan: node.sourceSpan
                 }
                 break
             case 'block':
                 finalNodes[finalNodeId] = {
                     type: 'block',
                     statements: node.statements ?? [],
-                    next: mapRef(node.next, nodeIdMap, predicateIdMap)
+                    next: mapRef(node.next, nodeIdMap, predicateIdMap),
+                    sourceSpan: node.sourceSpan
                 }
                 break
             case 'conditional':
                 finalNodes[finalNodeId] = {
                     type: 'conditional',
                     startPredicate: predicateIdMap.get(node.predicates?.[0]?.id ?? '') ?? '',
+                    sourceSpan: node.sourceSpan,
                     predicates: (node.predicates ?? []).map((predicate) => ({
                         predicate: {
                             ID: predicateIdMap.get(predicate.id) ?? predicate.id,
                             statement: predicate.statement,
                             onTrue: mapRef(predicate.onTrue, nodeIdMap, predicateIdMap),
-                            onFalse: mapRef(predicate.onFalse, nodeIdMap, predicateIdMap)
+                            onFalse: mapRef(predicate.onFalse, nodeIdMap, predicateIdMap),
+                            sourceSpan: predicate.sourceSpan
                         }
                     }))
                 }
@@ -198,12 +202,14 @@ export function finalizeMethodDraft(method: CfgMethodDraft, methodIndex: number)
                     iteratorStart: node.iteratorStart ?? null,
                     iteratorUpdate: node.iteratorUpdate ?? null,
                     startPredicate: predicateIdMap.get(node.predicates?.[0]?.id ?? '') ?? '',
+                    sourceSpan: node.sourceSpan,
                     predicates: (node.predicates ?? []).map((predicate) => ({
                         predicate: {
                             ID: predicateIdMap.get(predicate.id) ?? predicate.id,
                             statement: predicate.statement,
                             onTrue: mapRef(predicate.onTrue, nodeIdMap, predicateIdMap),
-                            onFalse: mapRef(predicate.onFalse, nodeIdMap, predicateIdMap)
+                            onFalse: mapRef(predicate.onFalse, nodeIdMap, predicateIdMap),
+                            sourceSpan: predicate.sourceSpan
                         }
                     }))
                 }
@@ -211,14 +217,16 @@ export function finalizeMethodDraft(method: CfgMethodDraft, methodIndex: number)
             case 'jump':
                 finalNodes[finalNodeId] = {
                     type: 'jump',
-                    next: mapRef(node.next, nodeIdMap, predicateIdMap)
+                    next: mapRef(node.next, nodeIdMap, predicateIdMap),
+                    sourceSpan: node.sourceSpan
                 }
                 break
             case 'exit':
                 finalNodes[finalNodeId] = {
                     type: 'exit',
                     return: node.returnValues ?? [],
-                    next: null
+                    next: null,
+                    sourceSpan: node.sourceSpan
                 }
                 break
         }
