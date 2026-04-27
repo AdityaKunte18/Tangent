@@ -1,0 +1,422 @@
+{
+  "sourcePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Real World Sampling/Point Lies Inside Given N points of a Convex Polygon/PCP.py",
+  "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/convex-polygon/PCP_generated_test.py",
+  "coverageBefore": {
+    "branchCoverage": {
+      "covered": 0,
+      "total": 18,
+      "percent": 0
+    },
+    "statementCoverage": {
+      "covered": 0,
+      "total": 14,
+      "percent": 0
+    },
+    "coveredObjectiveIds": [],
+    "uncoveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2:statement",
+      "M3:N10a:false",
+      "M3:N10a:true",
+      "M3:N11a:false",
+      "M3:N11a:true",
+      "M3:N12a:false",
+      "M3:N12a:true",
+      "M3:N13a:false",
+      "M3:N13a:true",
+      "M3:N14a:false",
+      "M3:N14a:true",
+      "M3:N20a:false",
+      "M3:N20a:true",
+      "M3:N4a:false",
+      "M3:N4a:true",
+      "M3:N15:statement",
+      "M3:N16:statement",
+      "M3:N18:statement",
+      "M3:N19:statement",
+      "M3:N2:statement",
+      "M3:N21:statement",
+      "M3:N22:statement",
+      "M3:N3:statement",
+      "M3:N6:statement",
+      "M3:N8:statement",
+      "M3:N9:statement",
+      "M4:N3a:false",
+      "M4:N3a:true",
+      "M4:N4a:false",
+      "M4:N4a:true",
+      "M4:N2:statement"
+    ],
+    "unattributableObjectiveIds": [],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "cw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "ccw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "convexHull",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 14,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 11,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M3:N10a:false",
+          "M3:N10a:true",
+          "M3:N11a:false",
+          "M3:N11a:true",
+          "M3:N12a:false",
+          "M3:N12a:true",
+          "M3:N13a:false",
+          "M3:N13a:true",
+          "M3:N14a:false",
+          "M3:N14a:true",
+          "M3:N20a:false",
+          "M3:N20a:true",
+          "M3:N4a:false",
+          "M3:N4a:true",
+          "M3:N15:statement",
+          "M3:N16:statement",
+          "M3:N18:statement",
+          "M3:N19:statement",
+          "M3:N2:statement",
+          "M3:N21:statement",
+          "M3:N22:statement",
+          "M3:N3:statement",
+          "M3:N6:statement",
+          "M3:N8:statement",
+          "M3:N9:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "isInside",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M4:N3a:false",
+          "M4:N3a:true",
+          "M4:N4a:false",
+          "M4:N4a:true",
+          "M4:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "coverageAfter": {
+    "branchCoverage": {
+      "covered": 15,
+      "total": 18,
+      "percent": 83.33
+    },
+    "statementCoverage": {
+      "covered": 13,
+      "total": 14,
+      "percent": 92.86
+    },
+    "coveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2:statement",
+      "M3:N10a:false",
+      "M3:N10a:true",
+      "M3:N11a:false",
+      "M3:N11a:true",
+      "M3:N12a:false",
+      "M3:N12a:true",
+      "M3:N13a:false",
+      "M3:N13a:true",
+      "M3:N14a:false",
+      "M3:N14a:true",
+      "M3:N20a:false",
+      "M3:N4a:false",
+      "M3:N15:statement",
+      "M3:N16:statement",
+      "M3:N18:statement",
+      "M3:N19:statement",
+      "M3:N2:statement",
+      "M3:N22:statement",
+      "M3:N3:statement",
+      "M3:N6:statement",
+      "M3:N8:statement",
+      "M3:N9:statement",
+      "M4:N3a:false",
+      "M4:N3a:true",
+      "M4:N4a:false",
+      "M4:N2:statement"
+    ],
+    "uncoveredObjectiveIds": [
+      "M3:N20a:true",
+      "M3:N4a:true",
+      "M3:N21:statement",
+      "M4:N4a:true"
+    ],
+    "unattributableObjectiveIds": [],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "cw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "ccw",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "convexHull",
+        "branchCoverage": {
+          "covered": 12,
+          "total": 14,
+          "percent": 85.71
+        },
+        "statementCoverage": {
+          "covered": 10,
+          "total": 11,
+          "percent": 90.91
+        },
+        "coveredObjectiveIds": [
+          "M3:N10a:false",
+          "M3:N10a:true",
+          "M3:N11a:false",
+          "M3:N11a:true",
+          "M3:N12a:false",
+          "M3:N12a:true",
+          "M3:N13a:false",
+          "M3:N13a:true",
+          "M3:N14a:false",
+          "M3:N14a:true",
+          "M3:N20a:false",
+          "M3:N4a:false",
+          "M3:N15:statement",
+          "M3:N16:statement",
+          "M3:N18:statement",
+          "M3:N19:statement",
+          "M3:N2:statement",
+          "M3:N22:statement",
+          "M3:N3:statement",
+          "M3:N6:statement",
+          "M3:N8:statement",
+          "M3:N9:statement"
+        ],
+        "uncoveredObjectiveIds": [
+          "M3:N20a:true",
+          "M3:N4a:true",
+          "M3:N21:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "isInside",
+        "branchCoverage": {
+          "covered": 3,
+          "total": 4,
+          "percent": 75
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M4:N3a:false",
+          "M4:N3a:true",
+          "M4:N4a:false",
+          "M4:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [
+          "M4:N4a:true"
+        ],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "acceptedCandidateCount": 2,
+  "rejectedCandidateCount": 9,
+  "acceptedTestNames": [
+    "test_cw_clockwise_points",
+    "test_convexHull_pop_upper_hull_ccw"
+  ],
+  "iterationHistory": [
+    {
+      "round": 1,
+      "targetObjectiveId": "M1:N2:statement",
+      "targetMethodName": "cw",
+      "candidateName": "test_cw_clockwise_points",
+      "accepted": true,
+      "reason": "Accepted test_cw_clockwise_points: covered target objective M1:N2:statement."
+    },
+    {
+      "round": 2,
+      "targetObjectiveId": "M3:N13a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_pop_upper_hull_ccw",
+      "accepted": true,
+      "reason": "Accepted test_convexHull_pop_upper_hull_ccw: covered target objective M3:N13a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_down_pop_loop_len_down_gt_1_false",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_down_pop_loop_len_down_gt_1_false: test passed but did not improve coverage or cover M3:N20a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_attempt_N20a_true",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_attempt_N20a_true: test passed but did not improve coverage or cover M3:N20a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_unreachable_n20a_true_attempt",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_unreachable_n20a_true_attempt: test passed but did not improve coverage or cover M3:N20a:true."
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_down_pop_on_cw_turn",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_down_pop_on_cw_turn: test/coverage execution failed (1)."
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_lower_hull_pop_on_cw_turn",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_lower_hull_pop_on_cw_turn: test/coverage execution failed (1)."
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_attempt_n20a_true_unreachable",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_attempt_n20a_true_unreachable: test passed but did not improve coverage or cover M3:N20a:true."
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_lower_hull_pop_on_cw_turn",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_lower_hull_pop_on_cw_turn: duplicate candidate fingerprint."
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_reach_n20_but_unreachable_n20a_true",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_reach_n20_but_unreachable_n20a_true: test/coverage execution failed (1)."
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N20a:true",
+      "targetMethodName": "convexHull",
+      "candidateName": "test_convexHull_reach_n20_but_n20a_false",
+      "accepted": false,
+      "reason": "Rejected test_convexHull_reach_n20_but_n20a_false: test passed but did not improve coverage or cover M3:N20a:true."
+    }
+  ],
+  "failedCandidateReasons": [
+    "Rejected test_convexHull_down_pop_loop_len_down_gt_1_false: test passed but did not improve coverage or cover M3:N20a:true.",
+    "Rejected test_convexHull_attempt_N20a_true: test passed but did not improve coverage or cover M3:N20a:true.",
+    "Rejected test_convexHull_unreachable_n20a_true_attempt: test passed but did not improve coverage or cover M3:N20a:true.",
+    "Rejected test_convexHull_down_pop_on_cw_turn: test/coverage execution failed (1).",
+    "Rejected test_convexHull_lower_hull_pop_on_cw_turn: test/coverage execution failed (1).",
+    "Rejected test_convexHull_attempt_n20a_true_unreachable: test passed but did not improve coverage or cover M3:N20a:true.",
+    "Rejected test_convexHull_lower_hull_pop_on_cw_turn: duplicate candidate fingerprint.",
+    "Rejected test_convexHull_reach_n20_but_unreachable_n20a_true: test/coverage execution failed (1).",
+    "Rejected test_convexHull_reach_n20_but_n20a_false: test passed but did not improve coverage or cover M3:N20a:true."
+  ]
+}

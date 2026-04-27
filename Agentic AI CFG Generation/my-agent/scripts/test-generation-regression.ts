@@ -1098,12 +1098,12 @@ static void test_bad() {
             {
                 name: 'Depth First Search',
                 cfgPath: path.join(projectRoot, 'output/DFS.py.yaml'),
-                sourcePath: path.join(projectRoot, 'input/Cross Language Equivilance/Depth First Search/DFS.py')
+                sourcePath: path.join(projectRoot, 'input/Real World Sampling/Depth First Search/DFS.py')
             },
             {
                 name: 'Convex Polygon',
                 cfgPath: path.join(projectRoot, 'output/PCP.py.yaml'),
-                sourcePath: path.join(projectRoot, 'input/Cross Language Equivilance/Point Lies Inside Given N points of a Convex Polygon/PCP.py')
+                sourcePath: path.join(projectRoot, 'input/Real World Sampling/Point Lies Inside Given N points of a Convex Polygon/PCP.py')
             }
         ]
 

@@ -1,0 +1,650 @@
+{
+  "sourcePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Cross Language Equivilance/Basic Methods/test.py",
+  "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/basic-methods/test_generated_test.py",
+  "coverageBefore": {
+    "branchCoverage": {
+      "covered": 0,
+      "total": 28,
+      "percent": 0
+    },
+    "statementCoverage": {
+      "covered": 0,
+      "total": 15,
+      "percent": 0
+    },
+    "coveredObjectiveIds": [],
+    "uncoveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2a:false",
+      "M2:N2a:true",
+      "M2:N3:statement",
+      "M2:N4:statement",
+      "M3:N2a:false",
+      "M3:N2a:true",
+      "M3:N4a:false",
+      "M3:N4a:true",
+      "M4:N2a:false",
+      "M4:N2a:true",
+      "M5:N3a:false",
+      "M5:N3a:true",
+      "M5:N6a:false",
+      "M5:N6a:true",
+      "M5:N2:statement",
+      "M5:N4:statement",
+      "M5:N8:statement",
+      "M6:N3a:false",
+      "M6:N3a:true",
+      "M6:N4a:false",
+      "M6:N4a:true",
+      "M6:N2:statement",
+      "M6:N7:statement",
+      "M7:N3a:false",
+      "M7:N3a:true",
+      "M7:N4a:false",
+      "M7:N4a:true",
+      "M7:N7a:false",
+      "M7:N7a:true",
+      "M7:N2:statement",
+      "M7:N8:statement",
+      "M7:N9:statement",
+      "M8:N3a:false",
+      "M8:N3a:true",
+      "M8:N6a:false",
+      "M8:N2:statement",
+      "M8:N4:statement",
+      "M9:N3a:false",
+      "M9:N3a:true",
+      "M9:N6a:false",
+      "M9:N2:statement",
+      "M9:N4:statement"
+    ],
+    "unattributableObjectiveIds": [
+      "M8:N6a:true",
+      "M9:N6a:true"
+    ],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "method001",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "method002",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M2:N2a:false",
+          "M2:N2a:true",
+          "M2:N3:statement",
+          "M2:N4:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "method003",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M3:N2a:false",
+          "M3:N2a:true",
+          "M3:N4a:false",
+          "M3:N4a:true"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "method004",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M4:N2a:false",
+          "M4:N2a:true"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M5",
+        "methodName": "method005",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M5:N3a:false",
+          "M5:N3a:true",
+          "M5:N6a:false",
+          "M5:N6a:true",
+          "M5:N2:statement",
+          "M5:N4:statement",
+          "M5:N8:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M6",
+        "methodName": "method006",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M6:N3a:false",
+          "M6:N3a:true",
+          "M6:N4a:false",
+          "M6:N4a:true",
+          "M6:N2:statement",
+          "M6:N7:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M7",
+        "methodName": "method007",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 6,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M7:N3a:false",
+          "M7:N3a:true",
+          "M7:N4a:false",
+          "M7:N4a:true",
+          "M7:N7a:false",
+          "M7:N7a:true",
+          "M7:N2:statement",
+          "M7:N8:statement",
+          "M7:N9:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M8",
+        "methodName": "method008",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M8:N3a:false",
+          "M8:N3a:true",
+          "M8:N6a:false",
+          "M8:N2:statement",
+          "M8:N4:statement"
+        ],
+        "unattributableObjectiveIds": [
+          "M8:N6a:true"
+        ]
+      },
+      {
+        "methodId": "M9",
+        "methodName": "method009",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M9:N3a:false",
+          "M9:N3a:true",
+          "M9:N6a:false",
+          "M9:N2:statement",
+          "M9:N4:statement"
+        ],
+        "unattributableObjectiveIds": [
+          "M9:N6a:true"
+        ]
+      }
+    ]
+  },
+  "coverageAfter": {
+    "branchCoverage": {
+      "covered": 9,
+      "total": 28,
+      "percent": 32.14
+    },
+    "statementCoverage": {
+      "covered": 4,
+      "total": 15,
+      "percent": 26.67
+    },
+    "coveredObjectiveIds": [
+      "M1:N2:statement",
+      "M2:N2a:false",
+      "M2:N2a:true",
+      "M2:N3:statement",
+      "M2:N4:statement",
+      "M3:N2a:false",
+      "M3:N2a:true",
+      "M3:N4a:false",
+      "M3:N4a:true",
+      "M4:N2a:false",
+      "M4:N2a:true",
+      "M5:N3a:false",
+      "M5:N2:statement"
+    ],
+    "uncoveredObjectiveIds": [
+      "M5:N3a:true",
+      "M5:N6a:false",
+      "M5:N6a:true",
+      "M5:N4:statement",
+      "M5:N8:statement",
+      "M6:N3a:false",
+      "M6:N3a:true",
+      "M6:N4a:false",
+      "M6:N4a:true",
+      "M6:N2:statement",
+      "M6:N7:statement",
+      "M7:N3a:false",
+      "M7:N3a:true",
+      "M7:N4a:false",
+      "M7:N4a:true",
+      "M7:N7a:false",
+      "M7:N7a:true",
+      "M7:N2:statement",
+      "M7:N8:statement",
+      "M7:N9:statement",
+      "M8:N3a:false",
+      "M8:N3a:true",
+      "M8:N6a:false",
+      "M8:N2:statement",
+      "M8:N4:statement",
+      "M9:N3a:false",
+      "M9:N3a:true",
+      "M9:N6a:false",
+      "M9:N2:statement",
+      "M9:N4:statement"
+    ],
+    "unattributableObjectiveIds": [
+      "M8:N6a:true",
+      "M9:N6a:true"
+    ],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "method001",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M1:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M2",
+        "methodName": "method002",
+        "branchCoverage": {
+          "covered": 2,
+          "total": 2,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 2,
+          "total": 2,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M2:N2a:false",
+          "M2:N2a:true",
+          "M2:N3:statement",
+          "M2:N4:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "method003",
+        "branchCoverage": {
+          "covered": 4,
+          "total": 4,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M3:N2a:false",
+          "M3:N2a:true",
+          "M3:N4a:false",
+          "M3:N4a:true"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M4",
+        "methodName": "method004",
+        "branchCoverage": {
+          "covered": 2,
+          "total": 2,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M4:N2a:false",
+          "M4:N2a:true"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M5",
+        "methodName": "method005",
+        "branchCoverage": {
+          "covered": 1,
+          "total": 4,
+          "percent": 25
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 3,
+          "percent": 33.33
+        },
+        "coveredObjectiveIds": [
+          "M5:N3a:false",
+          "M5:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [
+          "M5:N3a:true",
+          "M5:N6a:false",
+          "M5:N6a:true",
+          "M5:N4:statement",
+          "M5:N8:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M6",
+        "methodName": "method006",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M6:N3a:false",
+          "M6:N3a:true",
+          "M6:N4a:false",
+          "M6:N4a:true",
+          "M6:N2:statement",
+          "M6:N7:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M7",
+        "methodName": "method007",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 6,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M7:N3a:false",
+          "M7:N3a:true",
+          "M7:N4a:false",
+          "M7:N4a:true",
+          "M7:N7a:false",
+          "M7:N7a:true",
+          "M7:N2:statement",
+          "M7:N8:statement",
+          "M7:N9:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M8",
+        "methodName": "method008",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M8:N3a:false",
+          "M8:N3a:true",
+          "M8:N6a:false",
+          "M8:N2:statement",
+          "M8:N4:statement"
+        ],
+        "unattributableObjectiveIds": [
+          "M8:N6a:true"
+        ]
+      },
+      {
+        "methodId": "M9",
+        "methodName": "method009",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M9:N3a:false",
+          "M9:N3a:true",
+          "M9:N6a:false",
+          "M9:N2:statement",
+          "M9:N4:statement"
+        ],
+        "unattributableObjectiveIds": [
+          "M9:N6a:true"
+        ]
+      }
+    ]
+  },
+  "acceptedCandidateCount": 9,
+  "rejectedCandidateCount": 1,
+  "acceptedTestNames": [
+    "test_method001_statement_N2_x_equals_1",
+    "test_method002_branch_false_x_plus_y_le_0",
+    "test_method002_branch_true_x_plus_y_gt_0",
+    "test_method003_branch_N2a_false_N4a_true",
+    "test_method003_branch_N2a_true",
+    "test_method003_branch_N4a_false",
+    "test_method004_branch_N2a_false_x_gt_y",
+    "test_method004_branch_N2a_true_x_le_y_and_sum_lt_0",
+    "test_method005_branch_N3a_false"
+  ],
+  "iterationHistory": [
+    {
+      "round": 1,
+      "targetObjectiveId": "M1:N2:statement",
+      "targetMethodName": "method001",
+      "candidateName": "test_method001_statement_N2_x_equals_1",
+      "accepted": true,
+      "reason": "Accepted test_method001_statement_N2_x_equals_1: covered target objective M1:N2:statement."
+    },
+    {
+      "round": 2,
+      "targetObjectiveId": "M2:N2a:false",
+      "targetMethodName": "method002",
+      "candidateName": "test_method002_branch_false_x_plus_y_le_0",
+      "accepted": true,
+      "reason": "Accepted test_method002_branch_false_x_plus_y_le_0: covered target objective M2:N2a:false."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M2:N2a:true",
+      "targetMethodName": "method002",
+      "candidateName": "test_method002_branch_true_x_plus_y_gt_0",
+      "accepted": true,
+      "reason": "Accepted test_method002_branch_true_x_plus_y_gt_0: covered target objective M2:N2a:true."
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N2a:false",
+      "targetMethodName": "method003",
+      "candidateName": "test_method003_branch_N2a_false_N4a_true",
+      "accepted": true,
+      "reason": "Accepted test_method003_branch_N2a_false_N4a_true: covered target objective M3:N2a:false."
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N2a:true",
+      "targetMethodName": "method003",
+      "candidateName": "test_method003_branch_N2a_true",
+      "accepted": true,
+      "reason": "Accepted test_method003_branch_N2a_true: covered target objective M3:N2a:true."
+    },
+    {
+      "round": 6,
+      "targetObjectiveId": "M3:N4a:false",
+      "targetMethodName": "method003",
+      "candidateName": "test_method003_branch_N4a_false",
+      "accepted": true,
+      "reason": "Accepted test_method003_branch_N4a_false: covered target objective M3:N4a:false."
+    },
+    {
+      "round": 7,
+      "targetObjectiveId": "M4:N2a:false",
+      "targetMethodName": "method004",
+      "candidateName": "test_method004_branch_N2a_false_x_gt_y",
+      "accepted": false,
+      "reason": "Rejected test_method004_branch_N2a_false_x_gt_y: Syntax error: invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "round": 7,
+      "targetObjectiveId": "M4:N2a:false",
+      "targetMethodName": "method004",
+      "candidateName": "test_method004_branch_N2a_false_x_gt_y",
+      "accepted": true,
+      "reason": "Accepted test_method004_branch_N2a_false_x_gt_y: covered target objective M4:N2a:false."
+    },
+    {
+      "round": 8,
+      "targetObjectiveId": "M4:N2a:true",
+      "targetMethodName": "method004",
+      "candidateName": "test_method004_branch_N2a_true_x_le_y_and_sum_lt_0",
+      "accepted": true,
+      "reason": "Accepted test_method004_branch_N2a_true_x_le_y_and_sum_lt_0: covered target objective M4:N2a:true."
+    },
+    {
+      "round": 9,
+      "targetObjectiveId": "M5:N3a:false",
+      "targetMethodName": "method005",
+      "candidateName": "test_method005_branch_N3a_false",
+      "accepted": true,
+      "reason": "Accepted test_method005_branch_N3a_false: covered target objective M5:N3a:false."
+    }
+  ],
+  "failedCandidateReasons": [
+    "Rejected test_method004_branch_N2a_false_x_gt_y: Syntax error: invalid syntax (<unknown>, line 1)"
+  ]
+}

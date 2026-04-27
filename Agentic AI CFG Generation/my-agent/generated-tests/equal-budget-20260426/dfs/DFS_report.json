@@ -1,0 +1,282 @@
+{
+  "sourcePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Real World Sampling/Depth First Search/DFS.py",
+  "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/dfs/DFS_generated_test.py",
+  "coverageBefore": {
+    "branchCoverage": {
+      "covered": 0,
+      "total": 3,
+      "percent": 0
+    },
+    "statementCoverage": {
+      "covered": 0,
+      "total": 4,
+      "percent": 0
+    },
+    "coveredObjectiveIds": [],
+    "uncoveredObjectiveIds": [
+      "M1:N3a:true",
+      "M1:N4a:false",
+      "M1:N4a:true",
+      "M1:N2:statement",
+      "M1:N6:statement",
+      "M2:N2:statement",
+      "M3:N2:statement"
+    ],
+    "unattributableObjectiveIds": [
+      "M1:N3a:false"
+    ],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "dfsRec",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 2,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M1:N3a:true",
+          "M1:N4a:false",
+          "M1:N4a:true",
+          "M1:N2:statement",
+          "M1:N6:statement"
+        ],
+        "unattributableObjectiveIds": [
+          "M1:N3a:false"
+        ]
+      },
+      {
+        "methodId": "M2",
+        "methodName": "dfs",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "addEdge",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 0,
+          "total": 1,
+          "percent": 0
+        },
+        "coveredObjectiveIds": [],
+        "uncoveredObjectiveIds": [
+          "M3:N2:statement"
+        ],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "coverageAfter": {
+    "branchCoverage": {
+      "covered": 3,
+      "total": 3,
+      "percent": 100
+    },
+    "statementCoverage": {
+      "covered": 4,
+      "total": 4,
+      "percent": 100
+    },
+    "coveredObjectiveIds": [
+      "M1:N3a:true",
+      "M1:N4a:false",
+      "M1:N4a:true",
+      "M1:N2:statement",
+      "M1:N6:statement",
+      "M2:N2:statement",
+      "M3:N2:statement"
+    ],
+    "uncoveredObjectiveIds": [],
+    "unattributableObjectiveIds": [
+      "M1:N3a:false"
+    ],
+    "methods": [
+      {
+        "methodId": "M1",
+        "methodName": "dfsRec",
+        "branchCoverage": {
+          "covered": 3,
+          "total": 3,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 2,
+          "total": 2,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M1:N3a:true",
+          "M1:N4a:false",
+          "M1:N4a:true",
+          "M1:N2:statement",
+          "M1:N6:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": [
+          "M1:N3a:false"
+        ]
+      },
+      {
+        "methodId": "M2",
+        "methodName": "dfs",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M2:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      },
+      {
+        "methodId": "M3",
+        "methodName": "addEdge",
+        "branchCoverage": {
+          "covered": 0,
+          "total": 0,
+          "percent": 100
+        },
+        "statementCoverage": {
+          "covered": 1,
+          "total": 1,
+          "percent": 100
+        },
+        "coveredObjectiveIds": [
+          "M3:N2:statement"
+        ],
+        "uncoveredObjectiveIds": [],
+        "unattributableObjectiveIds": []
+      }
+    ]
+  },
+  "acceptedCandidateCount": 4,
+  "rejectedCandidateCount": 6,
+  "acceptedTestNames": [
+    "test_dfsRec_branch_N3a_true_N4a_false_exit",
+    "test_dfsRec_N4a_true_recursive_call_and_exit",
+    "test_dfs_execute_N2_N3_statements",
+    "test_addEdge_N2_statement"
+  ],
+  "iterationHistory": [
+    {
+      "round": 1,
+      "targetObjectiveId": "M1:N3a:true",
+      "targetMethodName": "dfsRec",
+      "candidateName": "test_dfsRec_branch_N3a_true_N4a_false_exit",
+      "accepted": true,
+      "reason": "Accepted test_dfsRec_branch_N3a_true_N4a_false_exit: covered target objective M1:N3a:true."
+    },
+    {
+      "round": 2,
+      "targetObjectiveId": "M1:N4a:true",
+      "targetMethodName": "dfsRec",
+      "candidateName": "test_dfsRec_N4a_true",
+      "accepted": false,
+      "reason": "Rejected test_dfsRec_N4a_true: Syntax error: unmatched '}' (<unknown>, line 1)"
+    },
+    {
+      "round": 2,
+      "targetObjectiveId": "M1:N4a:true",
+      "targetMethodName": "dfsRec",
+      "candidateName": "test_dfsRec_N4a_true_recursive_call_and_exit",
+      "accepted": true,
+      "reason": "Accepted test_dfsRec_N4a_true_recursive_call_and_exit: covered target objective M1:N4a:true."
+    },
+    {
+      "round": 3,
+      "targetObjectiveId": "M2:N2:statement",
+      "targetMethodName": "dfs",
+      "candidateName": "test_dfs_execute_N2_N3_statements",
+      "accepted": true,
+      "reason": "Accepted test_dfs_execute_N2_N3_statements: covered target objective M2:N2:statement."
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_execute_adj_u_append_v",
+      "accepted": false,
+      "reason": "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_execute_N2_statements",
+      "accepted": false,
+      "reason": "Rejected test_addEdge_execute_N2_statements: Syntax error: invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "round": 4,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_path_N2_statement_u_append_v",
+      "accepted": false,
+      "reason": "Rejected test_addEdge_path_N2_statement_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_execute_adj_u_append_v",
+      "accepted": false,
+      "reason": "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_execute_adj_u_append_v",
+      "accepted": false,
+      "reason": "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid decimal literal (<unknown>, line 1)"
+    },
+    {
+      "round": 5,
+      "targetObjectiveId": "M3:N2:statement",
+      "targetMethodName": "addEdge",
+      "candidateName": "test_addEdge_N2_statement",
+      "accepted": true,
+      "reason": "Accepted test_addEdge_N2_statement: covered target objective M3:N2:statement."
+    }
+  ],
+  "failedCandidateReasons": [
+    "Rejected test_dfsRec_N4a_true: Syntax error: unmatched '}' (<unknown>, line 1)",
+    "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+    "Rejected test_addEdge_execute_N2_statements: Syntax error: invalid syntax (<unknown>, line 1)",
+    "Rejected test_addEdge_path_N2_statement_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+    "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+    "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid decimal literal (<unknown>, line 1)"
+  ]
+}

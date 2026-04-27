@@ -1,0 +1,304 @@
+{
+  "budget": {
+    "maxRounds": 9,
+    "maxAcceptedTests": 9,
+    "maxNoGainRounds": 3,
+    "maxCandidates": 18
+  },
+  "results": [
+    {
+      "name": "Basic Methods",
+      "outDir": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/basic-methods",
+      "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/basic-methods/test_generated_test.py",
+      "reportPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/basic-methods/test_report.json",
+      "rawCoveragePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/basic-methods/test_coverage.json",
+      "acceptedCandidateCount": 9,
+      "rejectedCandidateCount": 1,
+      "coverageBefore": {
+        "statement": {
+          "covered": 0,
+          "total": 15,
+          "percent": 0
+        },
+        "branch": {
+          "covered": 0,
+          "total": 28,
+          "percent": 0
+        }
+      },
+      "coverageAfter": {
+        "statement": {
+          "covered": 4,
+          "total": 15,
+          "percent": 26.67
+        },
+        "branch": {
+          "covered": 9,
+          "total": 28,
+          "percent": 32.14
+        }
+      },
+      "uncoveredObjectiveIds": [
+        "M5:N3a:true",
+        "M5:N6a:false",
+        "M5:N6a:true",
+        "M5:N4:statement",
+        "M5:N8:statement",
+        "M6:N3a:false",
+        "M6:N3a:true",
+        "M6:N4a:false",
+        "M6:N4a:true",
+        "M6:N2:statement",
+        "M6:N7:statement",
+        "M7:N3a:false",
+        "M7:N3a:true",
+        "M7:N4a:false",
+        "M7:N4a:true",
+        "M7:N7a:false",
+        "M7:N7a:true",
+        "M7:N2:statement",
+        "M7:N8:statement",
+        "M7:N9:statement",
+        "M8:N3a:false",
+        "M8:N3a:true",
+        "M8:N6a:false",
+        "M8:N2:statement",
+        "M8:N4:statement",
+        "M9:N3a:false",
+        "M9:N3a:true",
+        "M9:N6a:false",
+        "M9:N2:statement",
+        "M9:N4:statement"
+      ],
+      "unattributableObjectiveIds": [
+        "M8:N6a:true",
+        "M9:N6a:true"
+      ],
+      "acceptedIterations": [
+        {
+          "round": 1,
+          "targetObjectiveId": "M1:N2:statement",
+          "targetMethodName": "method001",
+          "candidateName": "test_method001_statement_N2_x_equals_1",
+          "accepted": true,
+          "reason": "Accepted test_method001_statement_N2_x_equals_1: covered target objective M1:N2:statement."
+        },
+        {
+          "round": 2,
+          "targetObjectiveId": "M2:N2a:false",
+          "targetMethodName": "method002",
+          "candidateName": "test_method002_branch_false_x_plus_y_le_0",
+          "accepted": true,
+          "reason": "Accepted test_method002_branch_false_x_plus_y_le_0: covered target objective M2:N2a:false."
+        },
+        {
+          "round": 3,
+          "targetObjectiveId": "M2:N2a:true",
+          "targetMethodName": "method002",
+          "candidateName": "test_method002_branch_true_x_plus_y_gt_0",
+          "accepted": true,
+          "reason": "Accepted test_method002_branch_true_x_plus_y_gt_0: covered target objective M2:N2a:true."
+        },
+        {
+          "round": 4,
+          "targetObjectiveId": "M3:N2a:false",
+          "targetMethodName": "method003",
+          "candidateName": "test_method003_branch_N2a_false_N4a_true",
+          "accepted": true,
+          "reason": "Accepted test_method003_branch_N2a_false_N4a_true: covered target objective M3:N2a:false."
+        },
+        {
+          "round": 5,
+          "targetObjectiveId": "M3:N2a:true",
+          "targetMethodName": "method003",
+          "candidateName": "test_method003_branch_N2a_true",
+          "accepted": true,
+          "reason": "Accepted test_method003_branch_N2a_true: covered target objective M3:N2a:true."
+        },
+        {
+          "round": 6,
+          "targetObjectiveId": "M3:N4a:false",
+          "targetMethodName": "method003",
+          "candidateName": "test_method003_branch_N4a_false",
+          "accepted": true,
+          "reason": "Accepted test_method003_branch_N4a_false: covered target objective M3:N4a:false."
+        },
+        {
+          "round": 7,
+          "targetObjectiveId": "M4:N2a:false",
+          "targetMethodName": "method004",
+          "candidateName": "test_method004_branch_N2a_false_x_gt_y",
+          "accepted": true,
+          "reason": "Accepted test_method004_branch_N2a_false_x_gt_y: covered target objective M4:N2a:false."
+        },
+        {
+          "round": 8,
+          "targetObjectiveId": "M4:N2a:true",
+          "targetMethodName": "method004",
+          "candidateName": "test_method004_branch_N2a_true_x_le_y_and_sum_lt_0",
+          "accepted": true,
+          "reason": "Accepted test_method004_branch_N2a_true_x_le_y_and_sum_lt_0: covered target objective M4:N2a:true."
+        },
+        {
+          "round": 9,
+          "targetObjectiveId": "M5:N3a:false",
+          "targetMethodName": "method005",
+          "candidateName": "test_method005_branch_N3a_false",
+          "accepted": true,
+          "reason": "Accepted test_method005_branch_N3a_false: covered target objective M5:N3a:false."
+        }
+      ],
+      "failedCandidateReasons": [
+        "Rejected test_method004_branch_N2a_false_x_gt_y: Syntax error: invalid syntax (<unknown>, line 1)"
+      ]
+    },
+    {
+      "name": "Depth First Search",
+      "outDir": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/dfs",
+      "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/dfs/DFS_generated_test.py",
+      "reportPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/dfs/DFS_report.json",
+      "rawCoveragePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/dfs/DFS_coverage.json",
+      "acceptedCandidateCount": 4,
+      "rejectedCandidateCount": 6,
+      "coverageBefore": {
+        "statement": {
+          "covered": 0,
+          "total": 4,
+          "percent": 0
+        },
+        "branch": {
+          "covered": 0,
+          "total": 3,
+          "percent": 0
+        }
+      },
+      "coverageAfter": {
+        "statement": {
+          "covered": 4,
+          "total": 4,
+          "percent": 100
+        },
+        "branch": {
+          "covered": 3,
+          "total": 3,
+          "percent": 100
+        }
+      },
+      "uncoveredObjectiveIds": [],
+      "unattributableObjectiveIds": [
+        "M1:N3a:false"
+      ],
+      "acceptedIterations": [
+        {
+          "round": 1,
+          "targetObjectiveId": "M1:N3a:true",
+          "targetMethodName": "dfsRec",
+          "candidateName": "test_dfsRec_branch_N3a_true_N4a_false_exit",
+          "accepted": true,
+          "reason": "Accepted test_dfsRec_branch_N3a_true_N4a_false_exit: covered target objective M1:N3a:true."
+        },
+        {
+          "round": 2,
+          "targetObjectiveId": "M1:N4a:true",
+          "targetMethodName": "dfsRec",
+          "candidateName": "test_dfsRec_N4a_true_recursive_call_and_exit",
+          "accepted": true,
+          "reason": "Accepted test_dfsRec_N4a_true_recursive_call_and_exit: covered target objective M1:N4a:true."
+        },
+        {
+          "round": 3,
+          "targetObjectiveId": "M2:N2:statement",
+          "targetMethodName": "dfs",
+          "candidateName": "test_dfs_execute_N2_N3_statements",
+          "accepted": true,
+          "reason": "Accepted test_dfs_execute_N2_N3_statements: covered target objective M2:N2:statement."
+        },
+        {
+          "round": 5,
+          "targetObjectiveId": "M3:N2:statement",
+          "targetMethodName": "addEdge",
+          "candidateName": "test_addEdge_N2_statement",
+          "accepted": true,
+          "reason": "Accepted test_addEdge_N2_statement: covered target objective M3:N2:statement."
+        }
+      ],
+      "failedCandidateReasons": [
+        "Rejected test_dfsRec_N4a_true: Syntax error: unmatched '}' (<unknown>, line 1)",
+        "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+        "Rejected test_addEdge_execute_N2_statements: Syntax error: invalid syntax (<unknown>, line 1)",
+        "Rejected test_addEdge_path_N2_statement_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+        "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid syntax (<unknown>, line 1)",
+        "Rejected test_addEdge_execute_adj_u_append_v: Syntax error: invalid decimal literal (<unknown>, line 1)"
+      ]
+    },
+    {
+      "name": "Convex Polygon",
+      "outDir": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/convex-polygon",
+      "generatedTestPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/convex-polygon/PCP_generated_test.py",
+      "reportPath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/convex-polygon/PCP_report.json",
+      "rawCoveragePath": "/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/generated-tests/equal-budget-20260426/convex-polygon/PCP_coverage.json",
+      "acceptedCandidateCount": 2,
+      "rejectedCandidateCount": 9,
+      "coverageBefore": {
+        "statement": {
+          "covered": 0,
+          "total": 14,
+          "percent": 0
+        },
+        "branch": {
+          "covered": 0,
+          "total": 18,
+          "percent": 0
+        }
+      },
+      "coverageAfter": {
+        "statement": {
+          "covered": 13,
+          "total": 14,
+          "percent": 92.86
+        },
+        "branch": {
+          "covered": 15,
+          "total": 18,
+          "percent": 83.33
+        }
+      },
+      "uncoveredObjectiveIds": [
+        "M3:N20a:true",
+        "M3:N4a:true",
+        "M3:N21:statement",
+        "M4:N4a:true"
+      ],
+      "unattributableObjectiveIds": [],
+      "acceptedIterations": [
+        {
+          "round": 1,
+          "targetObjectiveId": "M1:N2:statement",
+          "targetMethodName": "cw",
+          "candidateName": "test_cw_clockwise_points",
+          "accepted": true,
+          "reason": "Accepted test_cw_clockwise_points: covered target objective M1:N2:statement."
+        },
+        {
+          "round": 2,
+          "targetObjectiveId": "M3:N13a:true",
+          "targetMethodName": "convexHull",
+          "candidateName": "test_convexHull_pop_upper_hull_ccw",
+          "accepted": true,
+          "reason": "Accepted test_convexHull_pop_upper_hull_ccw: covered target objective M3:N13a:true."
+        }
+      ],
+      "failedCandidateReasons": [
+        "Rejected test_convexHull_down_pop_loop_len_down_gt_1_false: test passed but did not improve coverage or cover M3:N20a:true.",
+        "Rejected test_convexHull_attempt_N20a_true: test passed but did not improve coverage or cover M3:N20a:true.",
+        "Rejected test_convexHull_unreachable_n20a_true_attempt: test passed but did not improve coverage or cover M3:N20a:true.",
+        "Rejected test_convexHull_down_pop_on_cw_turn: test/coverage execution failed (1).",
+        "Rejected test_convexHull_lower_hull_pop_on_cw_turn: test/coverage execution failed (1).",
+        "Rejected test_convexHull_attempt_n20a_true_unreachable: test passed but did not improve coverage or cover M3:N20a:true.",
+        "Rejected test_convexHull_lower_hull_pop_on_cw_turn: duplicate candidate fingerprint.",
+        "Rejected test_convexHull_reach_n20_but_unreachable_n20a_true: test/coverage execution failed (1).",
+        "Rejected test_convexHull_reach_n20_but_n20a_false: test passed but did not improve coverage or cover M3:N20a:true."
+      ]
+    }
+  ]
+}
