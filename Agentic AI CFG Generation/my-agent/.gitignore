@@ -1,0 +1,41 @@
+generated-tests/baselines/
+pynguin-report/
+__pycache__/
+*.pyc
+tools/evosuite/
+
+# macOS
+.DS_Store
+
+# Python / pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.py[cod]
+
+# CFG live test-generation outputs
+generated-tests/cfg-live-full-*/
+
+# Optional comparison/report artifacts if generated later
+generated-tests/comparisons/
+
+# C++ coverage/build artifacts
+generated-tests/**/*.profraw
+generated-tests/**/*.profdata
+generated-tests/**/*_bin
+
+# Java generated coverage/build artifacts
+generated-tests/**/java-classes/
+generated-tests/**/java-instrumented-src/
+generated-tests/**/*_lines.json
+
+# Run failure logs
+generated-tests/**/error.txt
+
+# KLEE local artifacts
+klee-out*/
+*.ktest
+*.bc
+*.ll
