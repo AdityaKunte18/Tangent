@@ -570,6 +570,146 @@ async function assertComplexJavaCoverageFixture(): Promise<void> {
     console.log('PASS Java complex coverage fixture')
 }
 
+async function assertJavaMultilineInstrumentationFixture(): Promise<void> {
+    let environmentReady = true
+    try {
+        await ensureJavaTestEnvironment()
+    } catch (error) {
+        environmentReady = false
+        console.log(`SKIP Java multiline instrumentation fixture (${error instanceof Error ? error.message : String(error)})`)
+    }
+    if (!environmentReady) {
+        return
+    }
+
+    const source = `public class SampleModule {
+    public static boolean cw(int[] a, int[] b, int[] c) {
+        int p = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1])
+                + c[0] * (a[1] - b[1]);
+        return p < 0;
+    }
+
+    public static int scan(int[][] points, int[] query) {
+        for (int i = 0; i < points.length; i++)
+            points[i] = query;
+
+        if (points.length > 1
+                && cw(points[0],
+                    points[1],
+                    query)) {
+            return 1;
+        }
+
+        if (java.util.Arrays.equals(points[0], query))
+            return 2;
+
+        return 3;
+    }
+}
+`
+    const cfgText = `methods:
+  - method:
+      id: M1
+      entry: N1
+      exit: N7
+      name: scan
+      type: int
+      nodes:
+        N1:
+          type: entry
+          arguments:
+            - name: points
+              type: int[][]
+            - name: query
+              type: int[]
+          next: N2
+        N2:
+          type: loop
+          iteratorStart: int i = 0
+          iteratorUpdate: null
+          startPredicate: N2a
+          predicates:
+            - predicate:
+                ID: N2a
+                statement: i < points.length
+                onTrue: N3
+                onFalse: N4
+        N3:
+          type: block
+          statements:
+            - points[i] = query;
+          next: N2
+        N4:
+          type: conditional
+          startPredicate: N4a
+          predicates:
+            - predicate:
+                ID: N4a
+                statement: points.length > 1 && cw(points[0], points[1], query)
+                onTrue: N5
+                onFalse: N6
+        N5:
+          type: block
+          statements:
+            - _return_value = 1;
+          next: N7
+        N6:
+          type: conditional
+          startPredicate: N6a
+          predicates:
+            - predicate:
+                ID: N6a
+                statement: java.util.Arrays.equals(points[0], query)
+                onTrue: N8
+                onFalse: N9
+        N7:
+          type: exit
+          return:
+            - name: _return_value
+              type: int
+          next: null
+        N8:
+          type: block
+          statements:
+            - _return_value = 2;
+          next: N7
+        N9:
+          type: block
+          statements:
+            - _return_value = 3;
+          next: N7
+`
+
+    const sourcePath = createTempJavaModule(source)
+    const document = loadCfgDocumentFromString(cfgText, sourcePath)
+    const method = document.methods[0].method
+    const objectives = enumerateCoverageObjectives(method)
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'testgen-java-multiline-coverage-'))
+    const testPath = path.join(outDir, 'SampleModuleMultilineGeneratedTest.java')
+    const coveragePath = path.join(outDir, 'sample_module_multiline_coverage.json')
+    fs.writeFileSync(testPath, `public class SampleModuleMultilineGeneratedTest {
+    static void test_multiline_condition_and_unbraced_bodies() {
+        int[][] points = { new int[] { 0, 0 }, new int[] { 1, 0 } };
+        assert SampleModule.scan(points, new int[] { 0, 1 }) == 2;
+    }
+
+    public static void main(String[] args) {
+        test_multiline_condition_and_unbraced_bodies();
+    }
+}
+`, 'utf-8')
+
+    const runResult = await runJavaCoverageSuite({
+        sourcePath,
+        testFilePath: testPath,
+        coverageJsonPath: coveragePath,
+        workingDir: outDir,
+        objectives
+    })
+    assert.equal(runResult.ok, true, runResult.stderr || runResult.coverageStderr)
+    console.log('PASS Java multiline instrumentation fixture')
+}
+
 async function main(): Promise<void> {
     const methodSource = `def classify(x, y):
     if x + y > 0:
@@ -1001,6 +1141,7 @@ static void test_bad() {
     await assertComplexPythonCoverageFixture()
     await assertComplexCppCoverageFixture()
     await assertComplexJavaCoverageFixture()
+    await assertJavaMultilineInstrumentationFixture()
 
     await assertNoLlmGenerationSmoke({
         name: 'Python public API',
@@ -1098,12 +1239,12 @@ static void test_bad() {
             {
                 name: 'Depth First Search',
                 cfgPath: path.join(projectRoot, 'output/DFS.py.yaml'),
-                sourcePath: path.join(projectRoot, 'input/Real World Sampling/Depth First Search/DFS.py')
+                sourcePath: path.join(projectRoot, 'input/Real World Sampling/DFS/DFS.py')
             },
             {
                 name: 'Convex Polygon',
                 cfgPath: path.join(projectRoot, 'output/PCP.py.yaml'),
-                sourcePath: path.join(projectRoot, 'input/Real World Sampling/Point Lies Inside Given N points of a Convex Polygon/PCP.py')
+                sourcePath: path.join(projectRoot, 'input/Real World Sampling/ConvexPoly/PCP.py')
             }
         ]
 

@@ -3,7 +3,7 @@ import pathlib
 import sys
 import pytest
 
-SOURCE_PATH = pathlib.Path(r"/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Real World Sampling/Depth First Search/DFS.py")
+SOURCE_PATH = pathlib.Path(r"/Users/adityakunte/Desktop/School/CS527/CS527_Project/Tangent/Agentic AI CFG Generation/my-agent/input/Real World Sampling/DFS/DFS.py")
 MODULE_NAME = SOURCE_PATH.stem + "_under_test"
 _spec = importlib.util.spec_from_file_location(MODULE_NAME, SOURCE_PATH)
 assert _spec is not None and _spec.loader is not None

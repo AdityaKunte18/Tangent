@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <format>
 
 using namespace std;
 
@@ -31,7 +30,7 @@ string method003(int x, int y) {
 
 string method004(int x, int y) {
     if (!(x > y) && (x + y < 0 || x*y <= 0)) {
-        return format("The values of x and y are {} and {}\n", x, y);
+        return "The values of x and y are " + to_string(x) + " and " + to_string(y) + "\n"; // return format("The values of x and y are {} and {}\n", x, y);
     }
     return "other";
 }

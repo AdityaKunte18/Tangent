@@ -362,16 +362,138 @@ function canInsertProbeBefore(line: string): boolean {
         && !/^(?:public|private|protected)?\s*(?:static\s+)?[\w<>\[\], ?]+\s+[A-Za-z_]\w*\s*\([^)]*\)\s*\{?\s*$/.test(trimmed)
 }
 
-function instrumentJavaSource(source: string, probeLines: Set<number>): string {
-    return source.split('\n').map((line, index) => {
-        const lineNumber = index + 1
-        if (!probeLines.has(lineNumber) || !canInsertProbeBefore(line)) {
-            return line
+function stripJavaLineForSyntax(line: string): string {
+    let result = ''
+    let inSingleQuote = false
+    let inDoubleQuote = false
+    let inBlockComment = false
+
+    for (let index = 0; index < line.length; index += 1) {
+        const current = line[index]
+        const next = line[index + 1]
+        const previous = line[index - 1]
+
+        if (inBlockComment) {
+            if (current === '*' && next === '/') {
+                inBlockComment = false
+                index += 1
+            }
+            continue
         }
 
+        if (!inSingleQuote && !inDoubleQuote) {
+            if (current === '/' && next === '/') {
+                break
+            }
+
+            if (current === '/' && next === '*') {
+                inBlockComment = true
+                index += 1
+                continue
+            }
+        }
+
+        if (current === '"' && !inSingleQuote && previous !== '\\') {
+            inDoubleQuote = !inDoubleQuote
+            result += ' '
+            continue
+        }
+
+        if (current === '\'' && !inDoubleQuote && previous !== '\\') {
+            inSingleQuote = !inSingleQuote
+            result += ' '
+            continue
+        }
+
+        result += (inSingleQuote || inDoubleQuote) ? ' ' : current
+    }
+
+    return result
+}
+
+function updateParenDepth(line: string, currentDepth: number): number {
+    let depth = currentDepth
+    for (const character of stripJavaLineForSyntax(line)) {
+        if (character === '(') {
+            depth += 1
+        } else if (character === ')') {
+            depth = Math.max(0, depth - 1)
+        }
+    }
+    return depth
+}
+
+function isContinuationLine(line: string): boolean {
+    return /^(?:[+*/%&|^?:.,=<>!-]|\|\||&&)/.test(line.trim())
+}
+
+function lineEndsAtStatementBoundary(line: string): boolean {
+    const trimmed = stripJavaLineForSyntax(line).trim()
+    return trimmed.length === 0
+        || trimmed.endsWith(';')
+        || trimmed.endsWith('{')
+        || trimmed.endsWith('}')
+}
+
+function isUnbracedControlHeader(line: string): boolean {
+    const trimmed = stripJavaLineForSyntax(line).trim()
+    return /^(?:if|for|while)\s*\(/.test(trimmed)
+        && !trimmed.endsWith(';')
+        && !trimmed.endsWith('{')
+}
+
+function canWrapAsControlBody(line: string): boolean {
+    const trimmed = line.trim()
+    return trimmed.length > 0
+        && !trimmed.startsWith('{')
+        && !trimmed.startsWith('}')
+        && !/^(?:else|catch|finally)\b/.test(trimmed)
+}
+
+function instrumentJavaSource(source: string, probeLines: Set<number>): string {
+    const output: string[] = []
+    const lines = source.split('\n')
+    let parenDepth = 0
+    let previousSignificantLine: string | null = null
+
+    for (const [index, line] of lines.entries()) {
+        const lineNumber = index + 1
+        const trimmed = line.trim()
+        const previousIsUnbracedControl = previousSignificantLine != null
+            && isUnbracedControlHeader(previousSignificantLine)
+        const atStatementBoundary = previousSignificantLine == null
+            || lineEndsAtStatementBoundary(previousSignificantLine)
+        const probeBeforeLine = probeLines.has(lineNumber)
+            && canInsertProbeBefore(line)
+            && parenDepth === 0
+            && !isContinuationLine(line)
+            && atStatementBoundary
+        const wrapControlBody = probeLines.has(lineNumber)
+            && canInsertProbeBefore(line)
+            && parenDepth === 0
+            && previousIsUnbracedControl
+            && canWrapAsControlBody(line)
+
         const indent = line.match(/^\s*/)?.[0] ?? ''
-        return `${indent}__CfgCoverageRecorder.line(${lineNumber});\n${line}`
-    }).join('\n')
+        if (probeBeforeLine) {
+            output.push(`${indent}__CfgCoverageRecorder.line(${lineNumber});`)
+            output.push(line)
+        } else if (wrapControlBody) {
+            output.push(`${indent}{`)
+            output.push(`${indent}    __CfgCoverageRecorder.line(${lineNumber});`)
+            output.push(`${indent}    ${trimmed}`)
+            output.push(`${indent}}`)
+        } else {
+            output.push(line)
+        }
+
+        parenDepth = updateParenDepth(line, parenDepth)
+        if (trimmed.length > 0 && !trimmed.startsWith('//')) {
+            previousSignificantLine = line
+        }
+    }
+
+    return output.join('\n')
 }
 
 function buildCoverageRecorderSource(): string {

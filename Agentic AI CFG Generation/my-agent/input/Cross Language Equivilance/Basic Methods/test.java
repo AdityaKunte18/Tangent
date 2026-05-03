@@ -15,7 +15,7 @@ public class test {
         return false;
     }
 
-    public static string method003(int x, int y) {
+    public static String method003(int x, int y) {
         if (x > 0 || y < 0) {
             return "first true";
         } else if (x < 0 && y > 0) {
@@ -24,9 +24,9 @@ public class test {
         return "both false";
     }
 
-    public static string method004(int x, int y) {
+    public static String method004(int x, int y) {
         if (!(x > y) && (x + y < 0 || x * y <=0)) {
-            return f"The values of x and y are {x} and {y}\n";
+            return "The values of x and y are " + x + " and " + y + "\n"; // return f"The values of x and y are {x} and {y}\n";
         }
         return "other";
     }
@@ -35,7 +35,7 @@ public class test {
         int loopCounter = 0;
         for (int i = 0; i < y; i += x) {
             loopCounter++;
-            if (loopCounter % 5) {
+            if (loopCounter % 5 != 0) {
                 loopCounter += 2;
             }
         }

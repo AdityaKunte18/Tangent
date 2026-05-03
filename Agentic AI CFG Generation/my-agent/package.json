@@ -11,7 +11,9 @@
     "dev": "npx tsx agent.ts",
     "typecheck": "tsc --noEmit",
     "test:cfg-regression": "node --import tsx ./scripts/cfg-regression.ts",
-    "test:test-generation-regression": "node --import tsx ./scripts/test-generation-regression.ts"
+    "test:test-generation-regression": "node --import tsx ./scripts/test-generation-regression.ts",
+    "test:test-generation-baselines:smoke": "node --import tsx ./scripts/test-generation-baselines.ts --mode=smoke",
+    "test:test-generation-baselines": "node --import tsx ./scripts/test-generation-baselines.ts --mode=full"
   },
   "keywords": [],
   "author": "",
